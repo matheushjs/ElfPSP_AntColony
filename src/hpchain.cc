@@ -7,7 +7,7 @@ HPChain::HPChain()                  : dChain(""){}
 HPChain::HPChain(const char *chain) : dChain(chain){}
 HPChain::HPChain(string chain)      : dChain(chain){}
 
-const string HPChain::get_chain(){
+string &HPChain::get_chain(){
 	return dChain;
 }
 
