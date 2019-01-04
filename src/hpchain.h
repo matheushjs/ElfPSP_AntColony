@@ -6,11 +6,11 @@ class HPChain {
 	std::string dChain;
 
 public:
-	HPChain();
-	HPChain(const char *chain);
-	HPChain(std::string chain);
+	HPChain()                  : dChain(""){}
+	HPChain(const char *chain) : dChain(chain){}
+	HPChain(std::string chain) : dChain(chain){}
 
-	std::string &get_chain();
+	std::string &get_chain(){ return dChain; }
 
 	bool validate();
 };

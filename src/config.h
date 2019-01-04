@@ -14,7 +14,7 @@ public:
 	Config();
 
 	std::string &hp_chain()    { return dHPChain; }
-	int         random_seed() { return dRandSeed; }
+	int         random_seed()  { return dRandSeed; }
 };
 
 #endif
