@@ -11,11 +11,12 @@ VPATH=src/
 all:
 	make prog
 
-prog: main.o hpchain.o config.o
+prog: main.o hpchain.o config.o movchain.o
 	g++ $(CFLAGS) $^ -o $@
 
 main.o: main.cc $(HARD_DEPS)
 hpchain.o: hpchain.cc $(HARD_DEPS)
+movchain.o: movchain.cc $(HARD_DEPS)
 config.o: config.cc $(HARD_DEPS)
 
 # Implicit rule for building objects
