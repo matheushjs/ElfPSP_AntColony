@@ -11,6 +11,8 @@ class MovChain {
 	static const char UP    = 'U';
 	static const char DOWN  = 'D';
 
+	static const char sMovHash[];
+
 public:
 	MovChain()                     : dMovChain(""){}
 	MovChain(std::string movchain) : dMovChain(movchain){}
@@ -21,4 +23,5 @@ public:
 
 	void append(char movement);
 	void append_random();
+	void randomize(int idx);
 };

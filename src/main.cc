@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 
 #include "hpchain.h"
 #include "config.h"
@@ -14,7 +16,13 @@ int main(int argc, char *argv[]){
 	Config conf;
 
 	cout << conf.hp_chain() << "\n";
-	cout << conf.random_seed() << "\n";
+	cout << conf.random_seed() << "\n";	
+
+	if(conf.random_seed() < 0){
+		srand(time(NULL));
+	} else {
+		srand(conf.random_seed());
+	}
 
 	return 0;
 }

@@ -14,6 +14,10 @@ all:
 prog: main.o hpchain.o config.o movchain.o
 	g++ $(CFLAGS) $^ -o $@
 
+clean:
+	rm -vf *.o
+	find -name "*~" -type f -exec rm -vf '{}' \;
+
 main.o: main.cc $(HARD_DEPS)
 hpchain.o: hpchain.cc $(HARD_DEPS)
 movchain.o: movchain.cc $(HARD_DEPS)
