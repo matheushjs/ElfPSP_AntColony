@@ -4,6 +4,7 @@
 
 #include "hpchain.h"
 #include "config.h"
+#include "vec3.h"
 
 using namespace std;
 
@@ -23,6 +24,12 @@ int main(int argc, char *argv[]){
 	} else {
 		srand(conf.random_seed());
 	}
+
+	vec3<int> p1(1, 2, 3);
+	vec3<int> p2(1, 2, 3);
+	vec3<int> p3 = p1 + p2;
+
+	cout << p3.y << "\n";
 
 	return 0;
 }
