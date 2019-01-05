@@ -3,21 +3,21 @@
 #include <ctime>
 
 #include "hpchain.h"
+#include "movchain.h"
 #include "config.h"
 #include "vec3.h"
+#include "acopredictor.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]){
-	cout  << HPChain("HHPP").validate() << "\n";
-	cout  << HPChain(string("HHHPPP")).validate() << "\n";
-	cout  << HPChain().validate() << "\n";
-	cout  << HPChain(string("ouch")).validate() << "\n";
-
 	Config conf;
+	HPChain hpchain(conf.hp_chain());
 
-	cout << conf.hp_chain() << "\n";
-	cout << conf.random_seed() << "\n";	
+	if(!hpchain.validate()){
+		cerr << "Invallid HP Chain. Received: " << hpchain.get_chain() << "\n";
+		std::exit(1);
+	}
 
 	if(conf.random_seed() < 0){
 		srand(time(NULL));
@@ -25,14 +25,10 @@ int main(int argc, char *argv[]){
 		srand(conf.random_seed());
 	}
 
-	vec3<int> p1(10, 0, 0);
-	vec3<int> p2({0, 0, 10});
+	ACOPredictor predictor(hpchain);
+	MovChain result = predictor.predict();
 
-	cout << p1 + p2 << "\n";
-	cout << p1 - p2 << "\n";
-	cout << p1.dot(p2) << "\n";
-	cout << p1.dot() << "\n";
-	cout << (p1-p2).norm2() << "\n";
+	cout << result.get_chain() << "\n";
 
 	return 0;
 }
