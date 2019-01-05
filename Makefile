@@ -3,7 +3,7 @@ CFLAGS=-Wall -O3 -I src -std=c++11
 
 # We take as a rule that if any API changes, everything should be rebuilt.
 # Same goes for the makefile itself
-HARD_DEPS=Makefile hpchain.h config.h
+HARD_DEPS=Makefile hpchain.h config.h vec3.h movchain.h
 
 # This is a variable used by Makefile itself
 VPATH=src/

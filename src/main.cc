@@ -25,11 +25,14 @@ int main(int argc, char *argv[]){
 		srand(conf.random_seed());
 	}
 
-	vec3<int> p1(1, 2, 3);
-	vec3<int> p2(1, 2, 3);
-	vec3<int> p3 = p1 + p2;
+	vec3<int> p1(10, 0, 0);
+	vec3<int> p2({0, 0, 10});
 
-	cout << p3.y << "\n";
+	cout << p1 + p2 << "\n";
+	cout << p1 - p2 << "\n";
+	cout << p1.dot(p2) << "\n";
+	cout << p1.dot() << "\n";
+	cout << (p1-p2).norm2() << "\n";
 
 	return 0;
 }
