@@ -11,6 +11,7 @@ public:
 	HPChain(std::string chain) : dChain(chain){}
 
 	std::string &get_chain(){ return dChain; }
+	int length() const { return dChain.length(); }
 
 	bool validate();
 };
