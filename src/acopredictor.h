@@ -4,10 +4,14 @@
 #include "movchain.h"
 
 class ACOPredictor {
-	HPChain hpchain;
+	HPChain dhpchain;
+	double *dPheromone;
+
+	double pheromone(int i, int d) const;
 
 public:
 	ACOPredictor(const HPChain &chain);
+	~ACOPredictor();
 
 	MovChain predict();
 };
