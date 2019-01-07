@@ -1,9 +1,10 @@
 #pragma once
 
-#include <string>
+#include <iostream>
+#include <vector>
 
 class MovChain {
-	std::string dMovChain;
+	std::vector<char> dVector;
 
 	static const char FRONT = 0;
 	static const char LEFT  = 1;
@@ -12,14 +13,14 @@ class MovChain {
 	static const char DOWN  = 4;
 
 public:
-	MovChain()                     : dMovChain(""){}
-	MovChain(std::string movchain) : dMovChain(movchain){}
-	MovChain(const char *movchain) : dMovChain(movchain){}
+	MovChain(){}
 
-	std::string &get_chain(){ return dMovChain; }
-	int length() const { return dMovChain.length(); }
+	const std::vector<char> &vector() const { return dVector; }
+	int length() const { return dVector.size(); }
 
 	void append(char movement);
 	void append_random();
 	void randomize(int idx);
 };
+
+std::ostream& operator<<(std::ostream& stream, const MovChain &chain);

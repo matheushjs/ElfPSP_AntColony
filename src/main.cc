@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
 	ACOPredictor predictor(hpchain, conf);
 	MovChain result = predictor.predict();
 
-	cout << result.get_chain() << "\n";
+	cout << result << "\n";
 
 	return 0;
 }
