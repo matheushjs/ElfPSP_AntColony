@@ -5,13 +5,11 @@
 class MovChain {
 	std::string dMovChain;
 
-	static const char FRONT = 'F';
-	static const char LEFT  = 'L';
-	static const char RIGHT = 'R';
-	static const char UP    = 'U';
-	static const char DOWN  = 'D';
-
-	static const char sMovHash[];
+	static const char FRONT = 0;
+	static const char LEFT  = 1;
+	static const char RIGHT = 2;
+	static const char UP    = 3;
+	static const char DOWN  = 4;
 
 public:
 	MovChain()                     : dMovChain(""){}
