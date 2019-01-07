@@ -17,9 +17,11 @@ Config::Config(){
 	int counter = 0;
 
 	counter += fscanf(fp, " HP_CHAIN: %ms", &hpChain);
+	counter += fscanf(fp, " CYCLES: %d", &dCycles);
+	counter += fscanf(fp, " RANDOM_SEED: %d", &dRandSeed);
+
 	dHPChain = std::string(hpChain);
 	free(hpChain);
-	counter += fscanf(fp, " RANDOM_SEED: %d", &dRandSeed);
 
 	fclose(fp);
 

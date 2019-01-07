@@ -17,6 +17,7 @@ int main(int argc, char *argv[]){
 	Config conf;
 
 	cout << conf.hp_chain() << "\n";
+	cout << conf.cycles() << "\n";
 	cout << conf.random_seed() << "\n";	
 
 	if(conf.random_seed() < 0){

@@ -5,16 +5,19 @@
 
 class Config {
 	static const char *sFilename;
-	static const int sParamCount = 2;
+	static const int sParamCount = 3;
 
 	std::string dHPChain;
+	int dCycles;
 	int dRandSeed;
 
 public:
 	Config();
 
-	std::string &hp_chain()    { return dHPChain; }
-	int         random_seed()  { return dRandSeed; }
+	const std::string&
+	    hp_chain()    const { return dHPChain; }
+	int cycles()      const { return dCycles; }
+	int random_seed() const { return dRandSeed; }
 };
 
 #endif

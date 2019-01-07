@@ -1,8 +1,13 @@
 HP_CHAIN: PPPPPPPPPPPPHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHPPPPPPPPPPPPPPPPPPPPPPPPHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+CYCLES: 600
+
 RANDOM_SEED: 72
 
 # DESCRIPTION
 #
 # HP_CHAIN  The chain representing the protein to predict.
+#
+# CYCLES    Number of cycles of the optimization algorithms.
 #
 # RANDOM_SEED    seed for the random number generator. If negative, seed is chosen randomly.
