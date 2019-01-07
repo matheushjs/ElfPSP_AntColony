@@ -14,6 +14,7 @@ struct vec3 {
 
 	vec3<T> operator+(const vec3<T> other);
 	vec3<T> operator-(const vec3<T> other);
+	vec3<T> operator-();
 	T dot(const vec3<T> other);
 	T dot();
 	T norm1();
@@ -40,6 +41,15 @@ inline vec3<T> vec3<T>::operator-(const vec3<T> other){
 	result.x = this->x - other.x;
 	result.y = this->y - other.y;
 	result.z = this->z - other.z;
+	return result;
+}
+
+template <typename T>
+inline vec3<T> vec3<T>::operator-(){
+	vec3<T> result;
+	result.x = -this->x;
+	result.y = -this->y;
+	result.z = -this->z;
 	return result;
 }
 

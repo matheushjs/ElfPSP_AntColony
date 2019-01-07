@@ -30,6 +30,7 @@ int main(int argc, char *argv[]){
 
 	cout << p1 + p2 << "\n";
 	cout << p1 - p2 << "\n";
+	cout << -p1 << "\n";
 	cout << p1.dot(p2) << "\n";
 	cout << p1.dot({1,1,1}) << "\n";
 	cout << p1.dot() << "\n";
