@@ -9,6 +9,7 @@ class ACOPredictor {
 	int dNAnts;
 	double dAlpha;
 	double dBeta;
+	int dNMovElems;
 	double *dPheromone;
 
 	double pheromone(int i, int d) const;

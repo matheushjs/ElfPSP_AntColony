@@ -11,7 +11,11 @@ ACOPredictor::ACOPredictor(const HPChain &hpchain, int cycles, int nAnts, double
   dNAnts(nAnts),
   dAlpha(alpha),
   dBeta(beta),
-  dPheromone( new double[(hpchain.length()-2)*5]() ) /* Value-initialized to 0.0 */ {
+  dNMovElems(hpchain.length() - 2)
+{
+	dPheromone = new double[dNMovElems*5];
+	std::fill(dPheromone, dPheromone + dNMovElems*5, 0.1);
+
 	for(int j = 0; j < 5; j++){
 		for(int i = 0; i < hpchain.length()-2; i++){
 			cout << pheromone(i, j) << " ";
