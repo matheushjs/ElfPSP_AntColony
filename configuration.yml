@@ -1,6 +1,9 @@
 HP_CHAIN: PPPPPPPPPPPPHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHPPPPPPPPPPPPPPPPPPPPPPPPHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
 CYCLES: 600
+N_ANTS: 100
+ACO_ALPHA: 1E0
+ACO_BETA: 1E0
 
 RANDOM_SEED: 72
 
@@ -8,6 +11,9 @@ RANDOM_SEED: 72
 #
 # HP_CHAIN  The chain representing the protein to predict.
 #
-# CYCLES    Number of cycles of the optimization algorithms.
+# CYCLES      Number of cycles of the optimization algorithms.
+# N_ANTS      Number of ants in the ant colony
+# ACO_ALPHA   Parameter 'alpha' of the ACO algorithm, which represents the weight of the pheromones in each ant's decision
+# ACO_BETA    Parameter 'beta' of the ACO algorithm, which represents the weight of the heuristic values on ant's decision
 #
 # RANDOM_SEED    seed for the random number generator. If negative, seed is chosen randomly.

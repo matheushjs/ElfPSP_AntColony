@@ -23,6 +23,9 @@ int main(int argc, char *argv[]){
 
 	cout << conf.hp_chain() << "\n";
 	cout << conf.cycles() << "\n";
+	cout << conf.n_ants() << "\n";
+	cout << conf.aco_alpha() << "\n";
+	cout << conf.aco_beta() << "\n";
 	cout << conf.random_seed() << "\n";	
 
 	if(conf.random_seed() < 0){

@@ -14,11 +14,22 @@ Config::Config(){
 	}
 
 	char *hpChain;
-	int counter = 0;
-
-	counter += fscanf(fp, " HP_CHAIN: %ms", &hpChain);
-	counter += fscanf(fp, " CYCLES: %d", &dCycles);
-	counter += fscanf(fp, " RANDOM_SEED: %d", &dRandSeed);
+	int counter = fscanf(fp,
+		// configuration.yml format
+		" HP_CHAIN: %ms "
+		" CYCLES: %d "
+		" N_ANTS: %d "
+		" ACO_ALPHA: %lf "
+		" ACO_BETA: %lf "
+		" RANDOM_SEED: %d ",
+		// Destination variables
+		&hpChain,
+		&dCycles,
+		&dNAnts,
+		&dAcoAlpha,
+		&dAcoBeta,
+		&dRandSeed
+	);
 
 	dHPChain = std::string(hpChain);
 	free(hpChain);
