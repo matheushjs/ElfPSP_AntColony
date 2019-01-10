@@ -5,9 +5,12 @@
 using std::cout;
 using std::cerr;
 
-ACOPredictor::ACOPredictor(const HPChain &hpchain, const Config &config)
+ACOPredictor::ACOPredictor(const HPChain &hpchain, int cycles, int nAnts, double alpha, double beta)
 : dhpchain(hpchain),
-  dConfig(config),
+  dCycles(cycles),
+  dNAnts(nAnts),
+  dAlpha(alpha),
+  dBeta(beta),
   dPheromone( new double[(hpchain.length()-2)*5]() ) /* Value-initialized to 0.0 */ {
 	for(int j = 0; j < 5; j++){
 		for(int i = 0; i < hpchain.length()-2; i++){
@@ -25,7 +28,7 @@ inline double ACOPredictor::pheromone(int i, int d) const {
 }
 
 MovChain ACOPredictor::predict(){
-	for(int i = 0; i < dConfig.cycles(); i++){
+	for(int i = 0; i < dCycles; i++){
 		// Create new chain
 		// Iterate over all n-2 directions
 		// calculate probabilities

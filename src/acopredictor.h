@@ -2,17 +2,19 @@
 
 #include "hpchain.h"
 #include "movchain.h"
-#include "config.h"
 
 class ACOPredictor {
 	HPChain dhpchain;
-	const Config &dConfig;
+	int dCycles;
+	int dNAnts;
+	double dAlpha;
+	double dBeta;
 	double *dPheromone;
 
 	double pheromone(int i, int d) const;
 
 public:
-	ACOPredictor(const HPChain &chain, const Config &config);
+	ACOPredictor(const HPChain &chain, int cycles, int nAnts, double alpha, double beta);
 	~ACOPredictor();
 
 	MovChain predict();

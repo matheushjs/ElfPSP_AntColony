@@ -25,7 +25,14 @@ int main(int argc, char *argv[]){
 		srand(conf.random_seed());
 	}
 
-	ACOPredictor predictor(hpchain, conf);
+	ACOPredictor predictor(
+		conf.hp_chain(),
+		conf.cycles(),
+		conf.n_ants(),
+		conf.aco_alpha(),
+		conf.aco_beta()
+	);
+
 	MovChain result = predictor.predict();
 
 	cout << result << "\n";
