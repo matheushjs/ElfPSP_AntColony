@@ -6,6 +6,12 @@
 struct ACOSolution {
 	std::vector<vec3<int>> dVector;
 
+	static const char UP    = 0;
+	static const char DOWN  = 1;
+	static const char LEFT  = 2;
+	static const char RIGHT = 3;
+	static const char FRONT = 4;
+
 	ACOSolution();
 };
 

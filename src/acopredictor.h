@@ -13,6 +13,7 @@ class ACOPredictor {
 	double *dPheromone;
 
 	double pheromone(int i, int d) const;
+	ACOSolution ant_develop_solution() const;
 
 public:
 	ACOPredictor(const HPChain &chain, int cycles, int nAnts, double alpha, double beta);
