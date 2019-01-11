@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 #include "acopredictor.h"
 
@@ -33,11 +34,41 @@ inline double ACOPredictor::pheromone(int i, int d) const {
 	return dPheromone[i*5 + d];
 }
 
+inline vector<double> ACOPredictor::get_probabilities(int movIndex, vector<double> heuristics) const {
+	using std::pow;
+
+	vector<double> retval(5);
+	double sum = 0;
+
+	for(int d = 0; d < 5; d++){
+		double A = pow(pheromone(movIndex, d), dAlpha);
+		double B = pow(heuristics[d], dBeta);
+		double aux = A * B;
+
+		sum += aux;
+		retval[d] = aux;
+	}
+
+	for(int d = 0; d < 5; d++){
+		retval[d] /= sum;
+	}
+
+	return retval;
+}
+
 inline ACOSolution ACOPredictor::ant_develop_solution() const {
 	ACOSolution sol;
 
+	vector<double> heurs(5, 1.0);
+
 	for(int i = 0; i < dNMovElems; i++){
-		// calculate probabilities
+		// Calculate heuristics
+
+		vector<double> probs = get_probabilities(i, heurs);
+		for(double n: probs)
+			cout << n << " ";
+		cout << "\n";
+
 		// decide direction
 	}
 

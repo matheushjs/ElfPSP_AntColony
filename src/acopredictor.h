@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "hpchain.h"
 #include "acosolution.h"
 
@@ -13,6 +15,7 @@ class ACOPredictor {
 	double *dPheromone;
 
 	double pheromone(int i, int d) const;
+	std::vector<double> get_probabilities(int movIndex, std::vector<double> heuristics) const;
 	ACOSolution ant_develop_solution() const;
 
 public:
