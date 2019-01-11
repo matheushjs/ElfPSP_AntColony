@@ -15,6 +15,9 @@ struct vec3 {
 	vec3<T> operator+(const vec3<T> other);
 	vec3<T> operator-(const vec3<T> other);
 	vec3<T> operator-();
+	
+	bool operator==(const vec3<T> other);
+
 	T dot(const vec3<T> other);
 	T dot();
 	T norm1();
@@ -51,6 +54,11 @@ inline vec3<T> vec3<T>::operator-(){
 	result.y = -this->y;
 	result.z = -this->z;
 	return result;
+}
+
+template <typename T>
+inline bool vec3<T>::operator==(const vec3<T> other){
+	return (this->x == other.x) && (this->y == other.y) && (this->z == other.z);
 }
 
 template <typename T>
