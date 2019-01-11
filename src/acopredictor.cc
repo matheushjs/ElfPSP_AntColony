@@ -31,7 +31,7 @@ inline double ACOPredictor::pheromone(int i, int d) const {
 	return dPheromone[i*5 + d];
 }
 
-MovChain ACOPredictor::predict(){
+ACOSolution ACOPredictor::predict(){
 	for(int i = 0; i < dCycles; i++){
 		// Create new chain
 		// Iterate over all n-2 directions
@@ -40,5 +40,5 @@ MovChain ACOPredictor::predict(){
 		if(i%100 == 0) cout << "Cycle: " << i << "\n";
 	}
 
-	return MovChain();
+	return ACOSolution();
 }

@@ -3,7 +3,6 @@
 #include <ctime>
 
 #include "hpchain.h"
-#include "movchain.h"
 #include "config.h"
 #include "vec3.h"
 
@@ -14,10 +13,6 @@ int main(int argc, char *argv[]){
 	cout  << HPChain(string("HHHPPP")).validate() << "\n";
 	cout  << HPChain().validate() << "\n";
 	cout  << HPChain(string("ouch")).validate() << "\n";
-
-	MovChain movchain;
-	for(int i = 0; i < 10; i++) movchain.append_random();
-	cout << movchain << "\n";
 
 	Config conf;
 

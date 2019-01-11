@@ -1,7 +1,7 @@
 #pragma once
 
 #include "hpchain.h"
-#include "movchain.h"
+#include "acosolution.h"
 
 class ACOPredictor {
 	HPChain dhpchain;
@@ -18,5 +18,5 @@ public:
 	ACOPredictor(const HPChain &chain, int cycles, int nAnts, double alpha, double beta);
 	~ACOPredictor();
 
-	MovChain predict();
+	ACOSolution predict();
 };

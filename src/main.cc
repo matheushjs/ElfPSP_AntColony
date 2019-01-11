@@ -3,7 +3,6 @@
 #include <ctime>
 
 #include "hpchain.h"
-#include "movchain.h"
 #include "config.h"
 #include "vec3.h"
 #include "acopredictor.h"
@@ -33,7 +32,7 @@ int main(int argc, char *argv[]){
 		conf.aco_beta()
 	);
 
-	MovChain result = predictor.predict();
+	ACOSolution result = predictor.predict();
 
 	cout << result << "\n";
 
