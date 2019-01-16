@@ -36,7 +36,7 @@ Config::Config(){
 
 	fclose(fp);
 
-	if(counter != sParamCount){
+	if(counter != 6){
 		std::cerr << "Could not parse configuration file correctly.\n";
 		std::exit(1);
 	}

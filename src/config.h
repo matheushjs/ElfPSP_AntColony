@@ -3,9 +3,11 @@
 
 #include <string>
 
+/** \brief Class that reads the configuration file (e.g. configuration.yml) and stores the
+ *    configuration parameters as internal variables.
+ */
 class Config {
-	static const char *sFilename;
-	static const int sParamCount = 6;
+	static const char *sFilename; /** Name of the configuration file. */
 
 	std::string dHPChain;
 	int         dCycles;
