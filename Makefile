@@ -21,6 +21,9 @@ clean:
 	rm -vf *.o
 	find -name "*~" -type f -exec rm -vf '{}' \;
 
+docs:
+	doxygen Doxyfile
+
 main.o: main.cc $(HARD_DEPS)
 test.o: test.cc $(HARD_DEPS)
 hpchain.o: hpchain.cc $(HARD_DEPS)

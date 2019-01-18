@@ -6,6 +6,7 @@
 
 const char *Config::sFilename = "configuration.yml";
 
+/* We simply "parse" the file using fscanf, which takes care of white space for us. */
 Config::Config(){
 	FILE *fp = fopen(sFilename, "r");
 	if(!fp){

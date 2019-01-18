@@ -17,6 +17,7 @@ class Config {
 	int         dRandSeed;
 
 public:
+	/** \brief The configuration file is read upon construction. */
 	Config();
 
 	/** \brief HP chain of the protein to be predicted. */
