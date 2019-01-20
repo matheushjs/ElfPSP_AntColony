@@ -30,10 +30,13 @@ ACOPredictor::~ACOPredictor(){
 	delete[] dPheromone;
 }
 
+/** Returns the pheromone at step i and direction d. */
 inline double ACOPredictor::pheromone(int i, int d) const {
 	return dPheromone[i*5 + d];
 }
 
+/** Return a vector V with 5 probabilities.
+ * V[d] is the probability of going to direction d. */
 inline vector<double> ACOPredictor::get_probabilities(int movIndex, vector<double> heuristics) const {
 	using std::pow;
 
@@ -56,6 +59,8 @@ inline vector<double> ACOPredictor::get_probabilities(int movIndex, vector<doubl
 	return retval;
 }
 
+/** Makes an ant develop a solution, beginning from the start.
+ * Returns the developed solution. */
 inline ACOSolution ACOPredictor::ant_develop_solution() const {
 	ACOSolution sol;
 
