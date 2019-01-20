@@ -2,7 +2,7 @@
 
 #include <string>
 
-/** \brief Class that encapsulates a string representing an HP chain. */
+/** \brief Encapsulates a string representing an HP chain. */
 class HPChain {
 	std::string dChain;
 

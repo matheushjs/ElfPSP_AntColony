@@ -4,26 +4,47 @@
 #include <iostream>
 #include <initializer_list>
 
+/** \brief Represents a triple (x, y, z) of any type.
+ */
 template <typename T>
 struct vec3 {
 	T x, y, z;
 
+	/** \brief  Internal coordinates are not initialized and may contain junk. */
 	vec3(){}
+
+	/** \brief Example `v = vec3(1, 2, 3)`. */
 	vec3(T a, T b, T c) : x(a), y(b), z(c){}
+
+	/** \brief Example `v = vec3({1, 2, 3})`. */
 	vec3(std::initializer_list<T> l) : x(*l.begin()), y(*(l.begin()+1)), z(*(l.begin()+2)){}
 
+	/** \brief Element-wise sum. */
 	vec3<T> operator+(const vec3<T> other);
+
+	/** \brief Element-wise subtraction. */
 	vec3<T> operator-(const vec3<T> other);
+
+	/** \brief Unary minus operation. Returns the opposite vector. */
 	vec3<T> operator-();
 	
+	/** \brief Returns true if both vectors have equal coordinates. */
 	bool operator==(const vec3<T> other);
 
+	/** \brief Returns the dot product of two vectors. */
 	T dot(const vec3<T> other);
+
+	/** \brief Returns the dot product of the vector with itself. */
 	T dot();
+
+	/** \brief Returns the norm1 of the vector (absolute value norm). */
 	T norm1();
+
+	/** \brief Returns the euclidean norm of the vector. */
 	T norm2();
 };
 
+/** \brief Allows a vector to be printed to `std::cout`. */
 template <typename T>
 std::ostream& operator<<(std::ostream& stream, const vec3<T> vec);
 
