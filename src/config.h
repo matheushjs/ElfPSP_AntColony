@@ -3,7 +3,7 @@
 
 #include <string>
 
-/** \brief Reads the configuration file (e.g. configuration.yml) and stores the
+/** \brief Reads the configuration file (eg configuration.yml) and stores the
  *    configuration parameters as internal variables.
  */
 class Config {

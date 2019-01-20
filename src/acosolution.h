@@ -3,15 +3,30 @@
 #include <vector>
 #include "vec3.h"
 
+/** Represents a solution that is built by an ant.
+ * A solution is thus a vector of coordinates of the beads of a protein.
+ */
 struct ACOSolution {
 	std::vector<vec3<int>> dVector;
 
+	/** Static constants representing relative directions. */
 	static const char UP    = 0;
 	static const char DOWN  = 1;
 	static const char LEFT  = 2;
 	static const char RIGHT = 3;
 	static const char FRONT = 4;
 
+	/** Given a previous direction and a relative direction, returns the corresponding delta vector.
+	 * Say we have a sequence of beads b1 and b2, each with their own coordinates, and that we want to add
+	 *   a new bead b3 whose relative direction is D from b2 and b1.
+	 * In this case, the previous direction is (b2 - b1).
+	 * This function thus returns the delta vector that should be added to bead b2 in order to obtain b3.
+	 * That is, b3 = (b2 + delta), where delta is the result of this function.
+	 *
+	 * \param prevDirection direction built from the previous 2 beads as (b2 - b1).
+	 * \param dir relative direction to follow, starting from the given previous direction.
+	 * \return the delta direction such that (b2 + delta) is the position of the next bead (say, b3)
+	 */
 	static vec3<int> get_direction_vector(vec3<int> prevDirection, char dir);
 
 	ACOSolution();
