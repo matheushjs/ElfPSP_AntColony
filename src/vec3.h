@@ -1,5 +1,7 @@
 #pragma once
 
+/** \file vec3.h */
+
 #include <cmath>
 #include <iostream>
 #include <initializer_list>
@@ -8,7 +10,8 @@
  */
 template <typename T>
 struct vec3 {
-	T x, y, z;
+	/** (x,y,z) coordinates. @{ */
+	T x, y, z; /** @} */
 
 	/** \brief  Internal coordinates are not initialized and may contain junk. */
 	vec3(){}
@@ -16,7 +19,7 @@ struct vec3 {
 	/** \brief Example `v = vec3(1, 2, 3)`. */
 	vec3(T a, T b, T c) : x(a), y(b), z(c){}
 
-	/** \brief Example `v = vec3({1, 2, 3})`. */
+	/** \brief Example `v = {1, 2, 3}`. */
 	vec3(std::initializer_list<T> l) : x(*l.begin()), y(*(l.begin()+1)), z(*(l.begin()+2)){}
 
 	/** \brief Element-wise sum. */

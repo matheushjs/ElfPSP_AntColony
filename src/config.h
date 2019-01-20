@@ -1,6 +1,8 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
 
+/** \file config.h */
+
 #include <string>
 
 /** \brief Reads the configuration file (eg configuration.yml) and stores the

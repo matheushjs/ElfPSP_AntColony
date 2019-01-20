@@ -1,5 +1,7 @@
 #pragma once
 
+/** \file acopredictor.h */
+
 #include <vector>
 
 #include "hpchain.h"

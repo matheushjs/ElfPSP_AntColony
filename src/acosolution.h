@@ -1,5 +1,7 @@
 #pragma once
 
+/** \file acosolution.h */
+
 #include <vector>
 #include "vec3.h"
 
@@ -7,14 +9,14 @@
  * A solution is thus a vector of coordinates of the beads of a protein.
  */
 struct ACOSolution {
-	std::vector<vec3<int>> dVector;
+	std::vector<vec3<int>> dVector; /**< Vector of bead coordinates. */
 
 	/** Static constants representing relative directions. */
-	static const char UP    = 0;
-	static const char DOWN  = 1;
-	static const char LEFT  = 2;
-	static const char RIGHT = 3;
-	static const char FRONT = 4;
+	static const char UP    = 0; /**< Relative direction. */
+	static const char DOWN  = 1; /**< Relative direction. */
+	static const char LEFT  = 2; /**< Relative direction. */
+	static const char RIGHT = 3; /**< Relative direction. */
+	static const char FRONT = 4; /**< Relative direction. */
 
 	/** Given a previous direction and a relative direction, returns the corresponding delta vector.
 	 * Say we have a sequence of beads b1 and b2, each with their own coordinates, and that we want to add
@@ -32,6 +34,7 @@ struct ACOSolution {
 	ACOSolution();
 };
 
+/** Each coordinate of the solution is printed sequentially, separated by whitespace. */
 std::ostream& operator<<(std::ostream& stream, const ACOSolution &sol);
 
 /********/

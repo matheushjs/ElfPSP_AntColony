@@ -1,5 +1,7 @@
 #pragma once
 
+/** \file hpchain.h */
+
 #include <string>
 
 /** \brief Encapsulates a string representing an HP chain. */
