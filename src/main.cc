@@ -1,5 +1,4 @@
 #include <iostream>
-#include <cstdlib>
 #include <ctime>
 
 #include "hpchain.h"
@@ -18,18 +17,13 @@ int main(int argc, char *argv[]){
 		std::exit(1);
 	}
 
-	if(conf.random_seed() < 0){
-		srand(time(NULL));
-	} else {
-		srand(conf.random_seed());
-	}
-
 	ACOPredictor predictor(
 		conf.hp_chain(),
 		conf.cycles(),
 		conf.n_ants(),
 		conf.aco_alpha(),
-		conf.aco_beta()
+		conf.aco_beta(),
+		conf.random_seed()
 	);
 
 	ACOSolution result = predictor.predict();

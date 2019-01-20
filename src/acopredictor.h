@@ -3,6 +3,7 @@
 /** \file acopredictor.h */
 
 #include <vector>
+#include <random>
 
 #include "hpchain.h"
 #include "acosolution.h"
@@ -17,8 +18,11 @@ class ACOPredictor {
 	double dBeta;
 	int dNMovElems;
 	double *dPheromone;
+	std::mt19937 dRandGen;
+	std::uniform_real_distribution<> dRandDist;
 
 	double pheromone(int i, int d) const;
+	double random();
 	std::vector<double> get_probabilities(int movIndex, std::vector<double> heuristics) const;
 	ACOSolution ant_develop_solution() const;
 
@@ -29,8 +33,9 @@ public:
 	 * \param nAnts Number of ants in the colony. All ants work in each cycle of the colony.
 	 * \param alpha Parameter alpha of the pheremone probability equation.
 	 * \param beta Parameter beta of the pheremone probability equation.
+	 * \param randSeed random seed to pass to the random number generator. If negative, a random seed is chosen.
 	 */
-	ACOPredictor(const HPChain &chain, int cycles, int nAnts, double alpha, double beta);
+	ACOPredictor(const HPChain &chain, int cycles, int nAnts, double alpha, double beta, int randSeed = -1);
 
 	/** The destructor frees memory allocated for holding internal data structures. */
 	~ACOPredictor();

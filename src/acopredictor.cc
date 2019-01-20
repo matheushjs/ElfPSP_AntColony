@@ -8,21 +8,27 @@ using std::cout;
 using std::cerr;
 using std::vector;
 
-ACOPredictor::ACOPredictor(const HPChain &hpchain, int cycles, int nAnts, double alpha, double beta)
+ACOPredictor::ACOPredictor(const HPChain &hpchain, int cycles, int nAnts, double alpha, double beta, int randSeed)
 : dhpchain(hpchain),
   dCycles(cycles),
   dNAnts(nAnts),
   dAlpha(alpha),
   dBeta(beta),
-  dNMovElems(hpchain.length() - 2)
+  dNMovElems(hpchain.length() - 2),
+  dRandDist(0.0, 1.0)
 {
 	dPheromone = new double[dNMovElems*5];
 	std::fill(dPheromone, dPheromone + dNMovElems*5, 0.1);
 
-	for(int j = 0; j < 5; j++){
-		for(int i = 0; i < hpchain.length()-2; i++){
-			cout << pheromone(i, j) << " ";
-		} cout << "\n";
+	if(randSeed < 0){
+		std::random_device rd;
+		dRandGen.seed(rd());
+	} else {
+		dRandGen.seed(randSeed);
+	}
+
+	for(int i = 0; i < 10; i++){
+		cout << this->random() << "\n";
 	}
 }
 
@@ -33,6 +39,11 @@ ACOPredictor::~ACOPredictor(){
 /** Returns the pheromone at step i and direction d. */
 inline double ACOPredictor::pheromone(int i, int d) const {
 	return dPheromone[i*5 + d];
+}
+
+/** Returns a random number in [0,1). */
+inline double ACOPredictor::random() {
+	return dRandDist(dRandGen);
 }
 
 /** Return a vector V with 5 probabilities.
@@ -70,9 +81,6 @@ inline ACOSolution ACOPredictor::ant_develop_solution() const {
 		// Calculate heuristics
 
 		vector<double> probs = get_probabilities(i, heurs);
-		for(double n: probs)
-			cout << n << " ";
-		cout << "\n";
 
 		// decide direction
 	}

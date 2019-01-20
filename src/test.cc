@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <cstdlib>
 #include <ctime>
 
 #include "hpchain.h"
@@ -52,12 +51,6 @@ int main(int argc, char *argv[]){
 	cout << conf.aco_alpha() << "\n\t";
 	cout << conf.aco_beta() << "\n\t";
 	cout << conf.random_seed() << "\n";	
-
-	if(conf.random_seed() < 0){
-		srand(time(NULL));
-	} else {
-		srand(conf.random_seed());
-	}
 
 	vec3<int> p1(10, 0, 0);
 	vec3<int> p2({0, 0, 10});
