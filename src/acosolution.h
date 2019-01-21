@@ -10,6 +10,8 @@
  */
 struct ACOSolution {
 	std::vector<vec3<int>> dVector; /**< Vector of bead coordinates. */
+	std::vector<char> dDirections; /**< Vector of directions taken by the ant. */
+	bool dError; /**< May be used to indicate errors. */
 
 	/** Static constants representing relative directions. */
 	static const char UP    = 0; /**< Relative direction. */
@@ -17,6 +19,9 @@ struct ACOSolution {
 	static const char LEFT  = 2; /**< Relative direction. */
 	static const char RIGHT = 3; /**< Relative direction. */
 	static const char FRONT = 4; /**< Relative direction. */
+
+	/** Maps directions to characters U, D, L, R, F. `DIR_TO_CHAR(0)` yields 'U'. */
+	static const char DIR_TO_CHAR(char d);
 
 	/** Given a previous direction and a relative direction, returns the corresponding delta vector.
 	 * Say we have a sequence of beads b1 and b2, each with their own coordinates, and that we want to add
@@ -36,17 +41,29 @@ struct ACOSolution {
 	 */
 	vec3<int> previous_direction() const;
 
+	/** Clears the internal error state. */
+	void clearError();
+
 	ACOSolution();
 };
 
-/** Each coordinate of the solution is printed sequentially, separated by whitespace. */
+/** Prints coordinates and directions of the solution.
+ * Each coordinate of the solution is printed sequentially, separated by whitespace.
+ * Then comes a newline.
+ * Then each direction is printed sequentially, not separated by whitespace. */
 std::ostream& operator<<(std::ostream& stream, const ACOSolution &sol);
 
 /********/
 
 inline ACOSolution::ACOSolution()
-: dVector({{0,0,0}, {1,0,0}})
+: dVector({{0,0,0}, {1,0,0}}), dError(false)
 {}
+
+inline
+const char ACOSolution::DIR_TO_CHAR(char d){
+	static const char map[] = { 'U', 'D', 'R', 'L', 'F' };
+	return map[(int) d];
+}
 
 inline
 vec3<int> ACOSolution::get_direction_vector(vec3<int> prevDirection, char dir){
@@ -87,9 +104,17 @@ vec3<int> ACOSolution::previous_direction() const {
 }
 
 inline
+void ACOSolution::clearError(){
+	this->dError = false;
+}
+
+inline
 std::ostream& operator<<(std::ostream& stream, const ACOSolution &sol){
-	for(const vec3<int> &point: sol.dVector){
+	for(const vec3<int> &point: sol.dVector)
 		stream << point << " ";
-	}
+	stream << "\n";
+	for(char c: sol.dDirections)
+		stream << ACOSolution::DIR_TO_CHAR(c);
+
 	return stream;
 }
