@@ -16,6 +16,7 @@ ACOPredictor::ACOPredictor(const HPChain &hpchain, int cycles, int nAnts, double
   dAlpha(alpha),
   dBeta(beta),
   dNMovElems(hpchain.length() - 2),
+  dHCount(0),
   dRandDist(0.0, 1.0)
 {
 	dPheromone = new double[dNMovElems*5];
@@ -26,6 +27,12 @@ ACOPredictor::ACOPredictor(const HPChain &hpchain, int cycles, int nAnts, double
 		dRandGen.seed(rd());
 	} else {
 		dRandGen.seed(randSeed);
+	}
+
+	// Count number of H residues
+	for(char c: dhpchain.get_chain()){
+		if(c == 'H')
+			dHCount++;
 	}
 }
 

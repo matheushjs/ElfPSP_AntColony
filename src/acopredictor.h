@@ -17,6 +17,7 @@ class ACOPredictor {
 	double dAlpha;
 	double dBeta;
 	int dNMovElems;
+	int dHCount;
 	double *dPheromone;
 	std::mt19937 dRandGen;
 	std::uniform_real_distribution<> dRandDist;
