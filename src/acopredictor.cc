@@ -64,6 +64,7 @@ ACOPredictor::get_heuristics(const vector<vec3<int> > &possiblePos, const vector
 		return retval;
 
 	int contacts[5] = { 0, 0, 0, 0, 0 };
+	int collisions[5] = { 0, 0, 0, 0, 0 };
 
 	// Get number of contacts per possible next position
 	for(int i = 0; i < 5; i++){
@@ -71,14 +72,21 @@ ACOPredictor::get_heuristics(const vector<vec3<int> > &possiblePos, const vector
 		for(unsigned j = 0; j < beadVector.size(); j++){
 			vec3<int> bead = beadVector[j];
 
+			if(nextPos == bead)
+				collisions[i]++;
+
 			int norm1 = (nextPos - bead).norm1();
 			if(norm1 == 1 && hpchain[j] == 'H')
 				contacts[i] += 1;
 		}
 	}
 
-	for(int i = 0; i < 5; i++)
-		retval[i] += contacts[i];
+	for(int i = 0; i < 5; i++){
+		if(collisions[i] == 0)
+			retval[i] += contacts[i];
+		else
+			retval[i] = 0;
+	}
 
 	return retval;
 }
@@ -109,7 +117,7 @@ inline vector<double> ACOPredictor::get_probabilities(int movIndex, vector<doubl
 
 /** Makes an ant develop a solution, beginning from the start.
  * Returns the developed solution. */
-inline ACOSolution ACOPredictor::ant_develop_solution() {
+ACOSolution ACOPredictor::ant_develop_solution() {
 	ACOSolution sol;
 
 	for(int i = 0; i < dNMovElems; i++){
@@ -128,10 +136,15 @@ inline ACOSolution ACOPredictor::ant_develop_solution() {
 		// Calculate heuristics
 		vector<double> heurs = get_heuristics(possiblePos, sol.dVector);
 
+		double sum = heurs[0] + heurs[1] + heurs[2] + heurs[3] + heurs[4];
+		if(sum == 0){
+			// TODO: BACKTRACK!
+			heurs[0] = 0.1;
+		}
+
 		// Get probabilities based on the ACO probability equation
 		vector<double> probs = get_probabilities(i, heurs);
 
-		/*
 		cout << "HorP: " << this->dhpchain.get_chain()[sol.dVector.size()] << "\n";
 		cout << "Heurs: ";
 		for(double i: heurs) cout << i << " ";
@@ -139,7 +152,6 @@ inline ACOSolution ACOPredictor::ant_develop_solution() {
 		cout << "Probs: ";
 		for(double i: probs) cout << i << " ";
 		cout << "\n\n";
-		*/
 
 		// Accumulate the probability vector
 		for(unsigned i = 1; i < probs.size(); i++)
