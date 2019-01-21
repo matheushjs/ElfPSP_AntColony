@@ -24,7 +24,7 @@ class ACOPredictor {
 	double pheromone(int i, int d) const;
 	double random();
 	std::vector<double> get_probabilities(int movIndex, std::vector<double> heuristics) const;
-	ACOSolution ant_develop_solution() const;
+	ACOSolution ant_develop_solution();
 
 public:
 	/** Default constructor.

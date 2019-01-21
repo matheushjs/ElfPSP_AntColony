@@ -31,6 +31,11 @@ struct ACOSolution {
 	 */
 	static vec3<int> get_direction_vector(vec3<int> prevDirection, char dir);
 
+	/** Returns the relative direction between the last 2 beads.
+	 * \return (b2 - b1) where b2 is the last bead and b1 is the second last bead.
+	 */
+	vec3<int> previous_direction() const;
+
 	ACOSolution();
 };
 
@@ -74,6 +79,11 @@ vec3<int> ACOSolution::get_direction_vector(vec3<int> prevDirection, char dir){
 	}
 
 	return retval;
+}
+
+inline
+vec3<int> ACOSolution::previous_direction() const {
+	return dVector.back() - dVector[dVector.size() - 2];
 }
 
 inline

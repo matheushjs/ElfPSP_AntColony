@@ -23,28 +23,28 @@ struct vec3 {
 	vec3(std::initializer_list<T> l) : x(*l.begin()), y(*(l.begin()+1)), z(*(l.begin()+2)){}
 
 	/** \brief Element-wise sum. */
-	vec3<T> operator+(const vec3<T> other);
+	vec3<T> operator+(const vec3<T> other) const;
 
 	/** \brief Element-wise subtraction. */
-	vec3<T> operator-(const vec3<T> other);
+	vec3<T> operator-(const vec3<T> other) const;
 
 	/** \brief Unary minus operation. Returns the opposite vector. */
-	vec3<T> operator-();
+	vec3<T> operator-() const;
 	
 	/** \brief Returns true if both vectors have equal coordinates. */
-	bool operator==(const vec3<T> other);
+	bool operator==(const vec3<T> other) const;
 
 	/** \brief Returns the dot product of two vectors. */
-	T dot(const vec3<T> other);
+	T dot(const vec3<T> other) const;
 
 	/** \brief Returns the dot product of the vector with itself. */
-	T dot();
+	T dot() const;
 
 	/** \brief Returns the norm1 of the vector (absolute value norm). */
-	T norm1();
+	T norm1() const;
 
 	/** \brief Returns the euclidean norm of the vector. */
-	T norm2();
+	T norm2() const;
 };
 
 /** \brief Allows a vector to be printed to `std::cout`. */
@@ -54,7 +54,7 @@ std::ostream& operator<<(std::ostream& stream, const vec3<T> vec);
 /******/
 
 template <typename T>
-inline vec3<T> vec3<T>::operator+(const vec3<T> other){
+inline vec3<T> vec3<T>::operator+(const vec3<T> other) const {
 	vec3<T> result;
 	result.x = this->x + other.x;
 	result.y = this->y + other.y;
@@ -63,7 +63,7 @@ inline vec3<T> vec3<T>::operator+(const vec3<T> other){
 }
 
 template <typename T>
-inline vec3<T> vec3<T>::operator-(const vec3<T> other){
+inline vec3<T> vec3<T>::operator-(const vec3<T> other) const {
 	vec3<T> result;
 	result.x = this->x - other.x;
 	result.y = this->y - other.y;
@@ -72,7 +72,7 @@ inline vec3<T> vec3<T>::operator-(const vec3<T> other){
 }
 
 template <typename T>
-inline vec3<T> vec3<T>::operator-(){
+inline vec3<T> vec3<T>::operator-() const {
 	vec3<T> result;
 	result.x = -this->x;
 	result.y = -this->y;
@@ -81,27 +81,27 @@ inline vec3<T> vec3<T>::operator-(){
 }
 
 template <typename T>
-inline bool vec3<T>::operator==(const vec3<T> other){
+inline bool vec3<T>::operator==(const vec3<T> other) const {
 	return (this->x == other.x) && (this->y == other.y) && (this->z == other.z);
 }
 
 template <typename T>
-inline T vec3<T>::dot(const vec3<T> other){
+inline T vec3<T>::dot(const vec3<T> other) const {
 	return this->x * other.x + this->y * other.y + this->z * other.z;
 }
 
 template <typename T>
-inline T vec3<T>::dot(){
+inline T vec3<T>::dot() const {
 	return this->x * this->x + this->y * this->y + this->z * this->z;
 }
 
 template <typename T>
-inline T vec3<T>::norm1(){
+inline T vec3<T>::norm1() const {
 	return std::abs(this->x) + std::abs(this->y) + std::abs(this->z);
 }
 
 template <typename T>
-inline T vec3<T>::norm2(){
+inline T vec3<T>::norm2() const {
 	return std::sqrt(this->dot());
 }
 
