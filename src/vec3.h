@@ -100,6 +100,7 @@ inline T vec3<T>::norm1() const {
 	return std::abs(this->x) + std::abs(this->y) + std::abs(this->z);
 }
 
+/** TODO: There is something wrong here. If T is int, an int should be returned? */
 template <typename T>
 inline T vec3<T>::norm2() const {
 	return std::sqrt(this->dot());

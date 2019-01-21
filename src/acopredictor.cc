@@ -7,6 +7,7 @@
 using std::cout;
 using std::cerr;
 using std::vector;
+using std::string;
 
 ACOPredictor::ACOPredictor(const HPChain &hpchain, int cycles, int nAnts, double alpha, double beta, int randSeed)
 : dhpchain(hpchain),
@@ -42,6 +43,39 @@ inline double ACOPredictor::random() {
 	return dRandDist(dRandGen);
 }
 
+/** Returns a vector V with 5 heuristics.
+ * V[d] is the heuristic associated with direction d. */
+inline vector<double>
+ACOPredictor::get_heuristics(const vector<vec3<int> > &possiblePos, const vector<vec3<int> > &beadVector){
+	string hpchain = this->dhpchain.get_chain();
+	vector<double> retval(5, 1.0);
+
+	// Bead being added is H or P?
+	char horp = hpchain[beadVector.size()];
+	
+	if(horp == 'P')
+		return retval;
+
+	int contacts[5] = { 0, 0, 0, 0, 0 };
+
+	// Get number of contacts per possible next position
+	for(int i = 0; i < 5; i++){
+		vec3<int> nextPos = possiblePos[i];
+		for(unsigned j = 0; j < beadVector.size(); j++){
+			vec3<int> bead = beadVector[j];
+
+			int norm1 = (nextPos - bead).norm1();
+			if(norm1 == 1 && hpchain[j] == 'H')
+				contacts[i] += 1;
+		}
+	}
+
+	for(int i = 0; i < 5; i++)
+		retval[i] += contacts[i];
+
+	return retval;
+}
+
 /** Return a vector V with 5 probabilities.
  * V[d] is the probability of going to direction d. */
 inline vector<double> ACOPredictor::get_probabilities(int movIndex, vector<double> heuristics) const {
@@ -71,13 +105,34 @@ inline vector<double> ACOPredictor::get_probabilities(int movIndex, vector<doubl
 inline ACOSolution ACOPredictor::ant_develop_solution() {
 	ACOSolution sol;
 
-	vector<double> heurs(5, 1.0);
-
 	for(int i = 0; i < dNMovElems; i++){
+		vec3<int> prevDir = sol.previous_direction();
+		vec3<int> prevBead = sol.dVector.back();
+
+		// Get possible positions for the next bead
+		vector<vec3<int>> possiblePos = {
+			prevBead + ACOSolution::get_direction_vector(prevDir, 0),
+			prevBead + ACOSolution::get_direction_vector(prevDir, 1),
+			prevBead + ACOSolution::get_direction_vector(prevDir, 2),
+			prevBead + ACOSolution::get_direction_vector(prevDir, 3),
+			prevBead + ACOSolution::get_direction_vector(prevDir, 4),
+		};
+
 		// Calculate heuristics
+		vector<double> heurs = get_heuristics(possiblePos, sol.dVector);
 
 		// Get probabilities based on the ACO probability equation
 		vector<double> probs = get_probabilities(i, heurs);
+
+		/*
+		cout << "HorP: " << this->dhpchain.get_chain()[sol.dVector.size()] << "\n";
+		cout << "Heurs: ";
+		for(double i: heurs) cout << i << " ";
+		cout << "\n";
+		cout << "Probs: ";
+		for(double i: probs) cout << i << " ";
+		cout << "\n\n";
+		*/
 
 		// Accumulate the probability vector
 		for(unsigned i = 1; i < probs.size(); i++)
@@ -94,8 +149,7 @@ inline ACOSolution ACOPredictor::ant_develop_solution() {
 		}
 
 		// Add bead in the decided direction
-		vec3<int> delta = ACOSolution::get_direction_vector(sol.previous_direction(), direction);
-		sol.dVector.push_back(sol.dVector.back() + delta);
+		sol.dVector.push_back(possiblePos[direction]);
 	}
 
 	return sol;
