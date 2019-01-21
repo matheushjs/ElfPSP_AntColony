@@ -53,15 +53,15 @@ inline double ACOPredictor::random() {
 /** Returns a vector V with 5 heuristics.
  * V[d] is the heuristic associated with direction d. */
 inline vector<double>
-ACOPredictor::get_heuristics(const vector<vec3<int> > &possiblePos, const vector<vec3<int> > &beadVector){
+ACOPredictor::get_heuristics(const vector<vec3<int>> &possiblePos, const vector<vec3<int>> &beadVector){
 	string hpchain = this->dhpchain.get_chain();
-	vector<double> retval(5, 1.0);
+	vector<double> retval(5, 0);
 
 	// Bead being added is H or P?
 	char horp = hpchain[beadVector.size()];
 	
 	if(horp == 'P')
-		return retval;
+		return vector<double>(5, 1.0);
 
 	int contacts[5] = { 0, 0, 0, 0, 0 };
 	int collisions[5] = { 0, 0, 0, 0, 0 };
@@ -83,9 +83,9 @@ ACOPredictor::get_heuristics(const vector<vec3<int> > &possiblePos, const vector
 
 	for(int i = 0; i < 5; i++){
 		if(collisions[i] == 0)
-			retval[i] += contacts[i];
+			retval[i] = 1.0 + contacts[i];
 		else
-			retval[i] = 0;
+			retval[i] = 0.0;
 	}
 
 	return retval;
@@ -136,10 +136,12 @@ ACOSolution ACOPredictor::ant_develop_solution() {
 		// Calculate heuristics
 		vector<double> heurs = get_heuristics(possiblePos, sol.dVector);
 
+		// If all heuristics are 0, there is no possible next direction to take.
 		double sum = heurs[0] + heurs[1] + heurs[2] + heurs[3] + heurs[4];
 		if(sum == 0){
-			// TODO: BACKTRACK!
-			heurs[0] = 0.1;
+			// TODO: BACKTRACK
+			sol.dError = true;
+			return sol;
 		}
 
 		// Get probabilities based on the ACO probability equation
@@ -169,6 +171,7 @@ ACOSolution ACOPredictor::ant_develop_solution() {
 
 		// Add bead in the decided direction
 		sol.dVector.push_back(possiblePos[direction]);
+		sol.dDirections.push_back(direction);
 	}
 
 	return sol;
@@ -182,11 +185,13 @@ ACOSolution ACOPredictor::predict(){
 
 		for(int j = 0; j < dNAnts; j++){
 			ACOSolution currentSol = ant_develop_solution();
-			antsSolutions.push_back(currentSol);
+			if(currentSol.dError == false){
+				antsSolutions.push_back(currentSol);
+			}
 		}
 
-		if(i%100 == 0) cout << "Cycle: " << i << "\n";
-		bestSol = antsSolutions.back();
+		if(antsSolutions.size() > 0)
+			bestSol = antsSolutions.back();
 	}
 
 	return bestSol;
