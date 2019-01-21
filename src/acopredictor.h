@@ -22,7 +22,7 @@ class ACOPredictor {
 	std::mt19937 dRandGen;
 	std::uniform_real_distribution<> dRandDist;
 
-	double pheromone(int i, int d) const;
+	double &pheromone(int i, int d) const;
 	double random();
 	std::vector<double> get_heuristics(
 			const std::vector<vec3<int>> &possiblePos,
@@ -30,6 +30,7 @@ class ACOPredictor {
 		);
 	std::vector<double> get_probabilities(int movIndex, std::vector<double> heuristics) const;
 	ACOSolution ant_develop_solution();
+	void ant_deposit_pheromone(const ACOSolution &sol);
 
 public:
 	/** Default constructor.
