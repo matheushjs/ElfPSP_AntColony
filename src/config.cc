@@ -22,6 +22,7 @@ Config::Config(){
 		" N_ANTS: %d "
 		" ACO_ALPHA: %lf "
 		" ACO_BETA: %lf "
+		" ACO_EVAPORATION: %lf "
 		" RANDOM_SEED: %d ",
 		// Destination variables
 		&hpChain,
@@ -29,6 +30,7 @@ Config::Config(){
 		&dNAnts,
 		&dAcoAlpha,
 		&dAcoBeta,
+		&dAcoEvaporation,
 		&dRandSeed
 	);
 
@@ -37,7 +39,7 @@ Config::Config(){
 
 	fclose(fp);
 
-	if(counter != 6){
+	if(counter != 7){
 		std::cerr << "Could not parse configuration file correctly.\n";
 		std::exit(1);
 	}

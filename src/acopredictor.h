@@ -16,6 +16,7 @@ class ACOPredictor {
 	int dNAnts;
 	double dAlpha;
 	double dBeta;
+	double dEvap;
 	int dNMovElems;
 	int dHCount;
 	double *dPheromone;
@@ -31,6 +32,7 @@ class ACOPredictor {
 	std::vector<double> get_probabilities(int movIndex, std::vector<double> heuristics) const;
 	ACOSolution ant_develop_solution();
 	void ant_deposit_pheromone(const ACOSolution &sol);
+	void evaporate_pheromone();
 
 public:
 	/** Default constructor.
@@ -39,9 +41,11 @@ public:
 	 * \param nAnts Number of ants in the colony. All ants work in each cycle of the colony.
 	 * \param alpha Parameter alpha of the pheremone probability equation.
 	 * \param beta Parameter beta of the pheremone probability equation.
+	 * \param evap Evaporation rate of pheromones. Each pheromone is multiplied by (1-evap) at each iteration.
 	 * \param randSeed random seed to pass to the random number generator. If negative, a random seed is chosen.
 	 */
-	ACOPredictor(const HPChain &chain, int cycles, int nAnts, double alpha, double beta, int randSeed = -1);
+	ACOPredictor(const HPChain &chain, int cycles, int nAnts,
+	             double alpha, double beta, double evap, int randSeed = -1);
 
 	/** The destructor frees memory allocated for holding internal data structures. */
 	~ACOPredictor();

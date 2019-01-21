@@ -23,6 +23,7 @@ int main(int argc, char *argv[]){
 		conf.n_ants(),
 		conf.aco_alpha(),
 		conf.aco_beta(),
+		conf.aco_evaporation(),
 		conf.random_seed()
 	);
 

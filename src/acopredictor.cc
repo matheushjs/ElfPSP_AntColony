@@ -9,12 +9,15 @@ using std::cerr;
 using std::vector;
 using std::string;
 
-ACOPredictor::ACOPredictor(const HPChain &hpchain, int cycles, int nAnts, double alpha, double beta, int randSeed)
+ACOPredictor::ACOPredictor(
+	const HPChain &hpchain, int cycles, int nAnts,
+	double alpha, double beta, double evap, int randSeed)
 : dhpchain(hpchain),
   dCycles(cycles),
   dNAnts(nAnts),
   dAlpha(alpha),
   dBeta(beta),
+  dEvap(evap),
   dNMovElems(hpchain.length() - 2),
   dHCount(0),
   dRandDist(0.0, 1.0)
@@ -206,6 +209,11 @@ void ACOPredictor::ant_deposit_pheromone(const ACOSolution &sol){
 	for(unsigned i = 0; i < dirs.size(); i++){
 		pheromone(i, dirs[i]) += contacts / dHCount;
 	}
+}
+
+/** Each pheromone is multiplied by (1-p) where p is the persistence defined by the user. */
+void ACOPredictor::evaporate_pheromone(){
+
 }
 
 ACOSolution ACOPredictor::predict(){
