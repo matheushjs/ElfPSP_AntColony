@@ -213,7 +213,11 @@ void ACOPredictor::ant_deposit_pheromone(const ACOSolution &sol){
 
 /** Each pheromone is multiplied by (1-p) where p is the persistence defined by the user. */
 void ACOPredictor::evaporate_pheromone(){
-
+	for(int i = 0; i < dNMovElems; i++){
+		for(int j = 0; j < 5; j++){
+			pheromone(i, j) *= (1 - dEvap);
+		}
+	}
 }
 
 ACOSolution ACOPredictor::predict(){
@@ -234,9 +238,23 @@ ACOSolution ACOPredictor::predict(){
 		for(const ACOSolution &sol: antsSolutions){
 			ant_deposit_pheromone(sol);
 		}
+		
+		// Evaporate pheromones
+		evaporate_pheromone();
 
 		if(antsSolutions.size() > 0)
 			bestSol = antsSolutions.back();
+
+		/*
+		if(i%2 == 0){
+			for(int j = 0; j < 5; j++){
+				for(int i = 0; i < dNMovElems; i++)
+					cout << pheromone(i, j) << " ";
+				cout << "\n";
+			}
+			cout << "\n";
+		}
+		*/
 	}
 
 	return bestSol;
