@@ -13,6 +13,9 @@ struct ACOSolution {
 	std::vector<char> dDirections; /**< Vector of directions taken by the ant. */
 	bool dError; /**< May be used to indicate errors. */
 
+	/** Default constructor; starts as an empty solution. */
+	ACOSolution();
+
 	/** Static constants representing relative directions. */
 	static const char UP    = 0; /**< Relative direction. */
 	static const char DOWN  = 1; /**< Relative direction. */
@@ -41,10 +44,13 @@ struct ACOSolution {
 	 */
 	vec3<int> previous_direction() const;
 
-	/** Clears the internal error state. */
-	void clearError();
+	/** Returns the number of H-H contacts within the solution.
+	 * \param chain The HPChain of the protein that this ACOSolution represents.
+	 */
+	int count_contacts(const HPChain &chain) const;
 
-	ACOSolution();
+	/** Clears the internal error state. */
+	void clear_error();
 };
 
 /** Prints coordinates and directions of the solution.
@@ -104,7 +110,24 @@ vec3<int> ACOSolution::previous_direction() const {
 }
 
 inline
-void ACOSolution::clearError(){
+int ACOSolution::count_contacts(const HPChain &chain) const {
+	int contacts = 0;
+
+	for(unsigned i = 0; i < dVector.size(); i++){
+		if(chain[i] == 'P') continue;
+
+		for(unsigned j = i+1; j < dVector.size(); j++){
+			if(chain[j] == 'P') continue;
+			int norm1 = (dVector[i] - dVector[j]).norm1();
+			if(norm1 == 1) contacts++;
+		}
+	}
+
+	return contacts;
+}
+
+inline
+void ACOSolution::clear_error(){
 	this->dError = false;
 }
 

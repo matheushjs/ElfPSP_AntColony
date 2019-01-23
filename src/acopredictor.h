@@ -31,7 +31,7 @@ class ACOPredictor {
 		);
 	std::vector<double> get_probabilities(int movIndex, std::vector<double> heuristics) const;
 	ACOSolution ant_develop_solution();
-	void ant_deposit_pheromone(const ACOSolution &sol);
+	void ant_deposit_pheromone(const std::vector<char> &directions, int nContacts);
 	void evaporate_pheromone();
 
 public:

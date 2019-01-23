@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <memory>
 
 #include "acopredictor.h"
 
@@ -187,31 +188,20 @@ ACOSolution ACOPredictor::ant_develop_solution() {
 	return sol;
 }
 
-void ACOPredictor::ant_deposit_pheromone(const ACOSolution &sol){
-	const vector<vec3<int>> beads = sol.dVector;
-	string &hpchain = dHPChain.get_chain();
-	int contacts = 0;
-
-	// First we calculate the protein energy. That is, number of H contacts.
-	for(unsigned i = 0; i < beads.size(); i++){
-		if(hpchain[i] == 'P') continue;
-
-		for(unsigned j = i+1; j < beads.size(); j++){
-			if(hpchain[j] == 'P') continue;
-			int norm1 = (beads[i] - beads[j]).norm1();
-			if(norm1 == 1) contacts++;
-		}
-	}
-
-	const vector<char> dirs = sol.dDirections;
-	
-	// Then we add pheromone
-	for(unsigned i = 0; i < dirs.size(); i++){
-		pheromone(i, dirs[i]) += contacts / dHCount;
+/** Deposits pheromones along the trail followed by the given ant.
+ *
+ * \param directions Vector of directions followed by the ant.
+ * \param nContacts Number of H-H contacts in the protein built by the given ant.
+ */
+inline
+void ACOPredictor::ant_deposit_pheromone(const vector<char> &directions, int nContacts){
+	for(unsigned i = 0; i < directions.size(); i++){
+		pheromone(i, directions[i]) += nContacts / dHCount;
 	}
 }
 
 /** Each pheromone is multiplied by (1-p) where p is the persistence defined by the user. */
+inline
 void ACOPredictor::evaporate_pheromone(){
 	for(int i = 0; i < dNMovElems; i++){
 		for(int j = 0; j < 5; j++){
@@ -234,11 +224,15 @@ ACOSolution ACOPredictor::predict(){
 			}
 		}
 
-		// Let each ant deposit pheromones over the trail they followed
-		for(const ACOSolution &sol: antsSolutions){
-			ant_deposit_pheromone(sol);
-		}
-		
+		// Calculate contacts
+		std::unique_ptr<int[]> nContacts(new int[antsSolutions.size()]);
+		for(unsigned j = 0; j < antsSolutions.size(); j++)
+			nContacts[j] = antsSolutions[j].count_contacts(dHPChain);
+
+		// Deposit pheromones
+		for(unsigned j = 0; j < antsSolutions.size(); j++)
+			ant_deposit_pheromone(antsSolutions[j].dDirections, nContacts[j]);
+
 		// Evaporate pheromones
 		evaporate_pheromone();
 
