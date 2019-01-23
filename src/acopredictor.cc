@@ -12,7 +12,7 @@ using std::string;
 ACOPredictor::ACOPredictor(
 	const HPChain &hpchain, int cycles, int nAnts,
 	double alpha, double beta, double evap, int randSeed)
-: dhpchain(hpchain),
+: dHPChain(hpchain),
   dCycles(cycles),
   dNAnts(nAnts),
   dAlpha(alpha),
@@ -33,7 +33,7 @@ ACOPredictor::ACOPredictor(
 	}
 
 	// Count number of H residues
-	for(char c: dhpchain.get_chain()){
+	for(char c: dHPChain.get_chain()){
 		if(c == 'H')
 			dHCount++;
 	}
@@ -62,7 +62,7 @@ inline double ACOPredictor::random() {
  * V[d] is the heuristic associated with direction d. */
 inline vector<double>
 ACOPredictor::get_heuristics(const vector<vec3<int>> &possiblePos, const vector<vec3<int>> &beadVector){
-	string hpchain = this->dhpchain.get_chain();
+	string hpchain = this->dHPChain.get_chain();
 	vector<double> retval(5, 0);
 
 	// Bead being added is H or P?
@@ -156,7 +156,7 @@ ACOSolution ACOPredictor::ant_develop_solution() {
 		vector<double> probs = get_probabilities(i, heurs);
 
 		/*
-		cout << "HorP: " << this->dhpchain.get_chain()[sol.dVector.size()] << "\n";
+		cout << "HorP: " << this->dHPChain.get_chain()[sol.dVector.size()] << "\n";
 		cout << "Heurs: ";
 		for(double i: heurs) cout << i << " ";
 		cout << "\n";
@@ -189,7 +189,7 @@ ACOSolution ACOPredictor::ant_develop_solution() {
 
 void ACOPredictor::ant_deposit_pheromone(const ACOSolution &sol){
 	const vector<vec3<int>> beads = sol.dVector;
-	string &hpchain = dhpchain.get_chain();
+	string &hpchain = dHPChain.get_chain();
 	int contacts = 0;
 
 	// First we calculate the protein energy. That is, number of H contacts.

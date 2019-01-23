@@ -11,7 +11,7 @@
 /** Encapsulates the whole process of performing Ant Colony Optimization to find
  *    a protein conformation with low free energy. */
 class ACOPredictor {
-	HPChain dhpchain;
+	HPChain dHPChain;
 	int dCycles;
 	int dNAnts;
 	double dAlpha;
