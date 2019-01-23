@@ -11,17 +11,22 @@
 /** Encapsulates the whole process of performing Ant Colony Optimization to find
  *    a protein conformation with low free energy. */
 class ACOPredictor {
+	/** @{ */
+	/** See constructor ACOPredictor(). */
 	HPChain dHPChain;
 	int dCycles;
 	int dNAnts;
 	double dAlpha;
 	double dBeta;
 	double dEvap;
+	/** @} */
+
+	/** Stores the number of moviments performed by an ant; its value is N-2 where N is the number of beads in the protein. */
 	int dNMovElems;
-	int dHCount;
-	double *dPheromone;
-	std::mt19937 dRandGen;
-	std::uniform_real_distribution<> dRandDist;
+	int dHCount; /**< Stores the number of hydrophobic (H) beads in the protein */
+	double *dPheromone; /**< Pheromone matrix. */
+	std::mt19937 dRandGen; /**< Random number generator used throughout the ACO algorithm. */
+	std::uniform_real_distribution<> dRandDist; /**< Random distribution that uses `dRandGen` to generate random numbers. */
 
 	double &pheromone(int i, int d) const;
 	double random();

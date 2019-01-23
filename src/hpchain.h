@@ -6,7 +6,7 @@
 
 /** Encapsulates a string representing an HP chain. */
 class HPChain {
-	std::string dChain;
+	std::string dChain; /**< The HPChain is represented by this string of characters 'H' and 'P'. */
 
 public:
 	/** Creates an empty HP chain. */

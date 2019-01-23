@@ -11,6 +11,8 @@
 class Config {
 	static const char *sFilename; /**< Name of the configuration file. */
 
+	/** @{ */
+	/** See constructor Config(). */
 	std::string dHPChain;
 	int         dCycles;
 	int         dNAnts;
@@ -18,6 +20,7 @@ class Config {
 	double      dAcoBeta;
 	double      dAcoEvaporation;
 	int         dRandSeed;
+	/** */
 
 public:
 	/** The configuration file is read upon construction. */
