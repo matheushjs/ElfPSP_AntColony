@@ -39,14 +39,16 @@ int main(int argc, char *argv[]){
 		conf.random_seed()
 	);
 
-	ACOSolution result = predictor.predict();
+	struct ACOPredictor::Results result = predictor.predict();
 
 	ofstream outFile = ofstream(conf.filename(), ios::trunc | ios::out);
 	outFile << "{\n";
-	outFile << "\t\"coords\": " << "\"" << result.vector() << "\",\n";
+	outFile << "\t\"coords\": " << "\"" << result.solution.vector() << "\",\n";
 	outFile << "\t\"hpchain\": " << "\"" << hpchain.get_chain() << "\",\n";
-	outFile << "\t\"directions\": " << "\"" << result.directions() << "\"\n";
+	outFile << "\t\"directions\": " << "\"" << result.solution.directions() << "\"\n";
 	outFile << "}";
+
+	cout << "Contacts: " << result.contacts << "\n";
 
 	return 0;
 }
