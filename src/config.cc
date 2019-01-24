@@ -15,6 +15,7 @@ Config::Config(){
 	}
 
 	char *hpChain;
+	char *filename;
 	int counter = fscanf(fp,
 		// configuration.yml format
 		" HP_CHAIN: %ms "
@@ -23,7 +24,8 @@ Config::Config(){
 		" ACO_ALPHA: %lf "
 		" ACO_BETA: %lf "
 		" ACO_EVAPORATION: %lf "
-		" RANDOM_SEED: %d ",
+		" RANDOM_SEED: %d "
+		" STRUCTURE_FILENAME: %ms ",
 		// Destination variables
 		&hpChain,
 		&dCycles,
@@ -31,15 +33,18 @@ Config::Config(){
 		&dAcoAlpha,
 		&dAcoBeta,
 		&dAcoEvaporation,
-		&dRandSeed
+		&dRandSeed,
+		&filename
 	);
 
 	dHPChain = std::string(hpChain);
+	dFilename = std::string(filename);
 	free(hpChain);
+	free(filename);
 
 	fclose(fp);
 
-	if(counter != 7){
+	if(counter != 8){
 		std::cerr << "Could not parse configuration file correctly.\n";
 		std::exit(1);
 	}

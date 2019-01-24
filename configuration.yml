@@ -8,6 +8,8 @@ ACO_EVAPORATION: 0.1
 
 RANDOM_SEED: 72
 
+STRUCTURE_FILENAME: output.yml
+
 # DESCRIPTION
 #
 # HP_CHAIN  The chain representing the protein to predict.
@@ -20,3 +22,5 @@ RANDOM_SEED: 72
 #                    At each iteration, pheromones are multiplied by (1-p), where p is this parameter.
 #
 # RANDOM_SEED    seed for the random number generator. If negative, seed is chosen randomly.
+#
+# STRUCTURE_FILENAME  name of the file where to output the structure information of the protein predicted.

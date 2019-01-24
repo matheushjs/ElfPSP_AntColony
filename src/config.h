@@ -12,7 +12,7 @@ class Config {
 	static const char *sFilename; /**< Name of the configuration file. */
 
 	/** @{ */
-	/** See constructor Config(). */
+	/** See getters. */
 	std::string dHPChain;
 	int         dCycles;
 	int         dNAnts;
@@ -20,6 +20,7 @@ class Config {
 	double      dAcoBeta;
 	double      dAcoEvaporation;
 	int         dRandSeed;
+	std::string dFilename;
 	/** */
 
 public:
@@ -49,6 +50,9 @@ public:
 	 *
 	 * If the user-provided seed is negative, that means we should take a random seed, such as `time(NULL).` */
 	int    random_seed() const { return dRandSeed; }
+
+	/** Output filename for structural information of the protein. */
+	const std::string &filename() const { return dFilename; }
 };
 
 #endif
