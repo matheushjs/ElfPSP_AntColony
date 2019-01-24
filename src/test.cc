@@ -29,7 +29,7 @@ void test_aco_solution(){
 		cout << "\t" << p << " <--- Previous Direction \n";
 		for(unsigned int i = 0; i < dir.size(); i++){
 			cout << "\t\t" << str[i] << "\t"
-			     << ACOSolution::get_direction_vector(p, dir[i]) << "\n";
+			     << ACOSolution::DIRECTION_VECTOR(p, dir[i]) << "\n";
 		}
 	}
 }

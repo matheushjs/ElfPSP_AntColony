@@ -131,25 +131,25 @@ ACOSolution ACOPredictor::ant_develop_solution() {
 
 	for(int i = 0; i < dNMovElems; i++){
 		vec3<int> prevDir = sol.previous_direction();
-		vec3<int> prevBead = sol.dVector.back();
+		vec3<int> prevBead = sol.vector().back();
 
 		// Get possible positions for the next bead
 		vector<vec3<int>> possiblePos = {
-			prevBead + ACOSolution::get_direction_vector(prevDir, 0),
-			prevBead + ACOSolution::get_direction_vector(prevDir, 1),
-			prevBead + ACOSolution::get_direction_vector(prevDir, 2),
-			prevBead + ACOSolution::get_direction_vector(prevDir, 3),
-			prevBead + ACOSolution::get_direction_vector(prevDir, 4),
+			prevBead + ACOSolution::DIRECTION_VECTOR(prevDir, 0),
+			prevBead + ACOSolution::DIRECTION_VECTOR(prevDir, 1),
+			prevBead + ACOSolution::DIRECTION_VECTOR(prevDir, 2),
+			prevBead + ACOSolution::DIRECTION_VECTOR(prevDir, 3),
+			prevBead + ACOSolution::DIRECTION_VECTOR(prevDir, 4),
 		};
 
 		// Calculate heuristics
-		vector<double> heurs = get_heuristics(possiblePos, sol.dVector);
+		vector<double> heurs = get_heuristics(possiblePos, sol.vector());
 
 		// If all heuristics are 0, there is no possible next direction to take.
 		double sum = heurs[0] + heurs[1] + heurs[2] + heurs[3] + heurs[4];
 		if(sum == 0){
 			// TODO: BACKTRACK
-			sol.dError = true;
+			sol.set_error();
 			return sol;
 		}
 
@@ -157,7 +157,7 @@ ACOSolution ACOPredictor::ant_develop_solution() {
 		vector<double> probs = get_probabilities(i, heurs);
 
 		/*
-		cout << "HorP: " << this->dHPChain.get_chain()[sol.dVector.size()] << "\n";
+		cout << "HorP: " << this->dHPChain.get_chain()[sol.vector().size()] << "\n";
 		cout << "Heurs: ";
 		for(double i: heurs) cout << i << " ";
 		cout << "\n";
@@ -181,8 +181,8 @@ ACOSolution ACOPredictor::ant_develop_solution() {
 		}
 
 		// Add bead in the decided direction
-		sol.dVector.push_back(possiblePos[direction]);
-		sol.dDirections.push_back(direction);
+		sol.vector().push_back(possiblePos[direction]);
+		sol.directions().push_back(direction);
 	}
 
 	return sol;
@@ -219,7 +219,7 @@ ACOSolution ACOPredictor::predict(){
 		// Let each ant develop a solution
 		for(int j = 0; j < dNAnts; j++){
 			ACOSolution currentSol = ant_develop_solution();
-			if(currentSol.dError == false){
+			if(currentSol.has_error() == false){
 				antsSolutions.push_back(currentSol);
 			}
 		}
@@ -231,7 +231,7 @@ ACOSolution ACOPredictor::predict(){
 
 		// Deposit pheromones
 		for(unsigned j = 0; j < antsSolutions.size(); j++)
-			ant_deposit_pheromone(antsSolutions[j].dDirections, nContacts[j]);
+			ant_deposit_pheromone(antsSolutions[j].directions(), nContacts[j]);
 
 		// Evaporate pheromones
 		evaporate_pheromone();

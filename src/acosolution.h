@@ -5,13 +5,15 @@
 #include <vector>
 #include "vec3.h"
 
-/** Represents a solution that is built by an ant.
+/** Encapsulates a solution that is built by an ant.
  * A solution is thus a vector of coordinates of the beads of a protein.
  */
-struct ACOSolution {
+class ACOSolution {
 	std::vector<vec3<int>> dVector; /**< Vector of bead coordinates. */
 	std::vector<char> dDirections; /**< Vector of directions taken by the ant. */
 	bool dError; /**< May be used to indicate errors. */
+
+public:
 
 	/** Default constructor; starts as an empty solution. */
 	ACOSolution();
@@ -26,6 +28,22 @@ struct ACOSolution {
 	/** Maps directions to characters U, D, L, R, F. `DIR_TO_CHAR(0)` yields 'U'. */
 	static const char DIR_TO_CHAR(char d);
 
+	/** @{ */ /** Vector of bead coordinates. */
+	std::vector<vec3<int>> &vector() { return dVector; }
+	const std::vector<vec3<int>> &vector() const { return dVector; }
+	/** @} */
+
+	/** @{ */ /** Vector of directions taken by the ant. */
+	std::vector<char> &directions(){ return dDirections; }
+	const std::vector<char> &directions() const { return dDirections; }
+	/** @} */
+
+	/** Gets an specific bead. */
+	vec3<int> bead(unsigned int i){ return dVector[i]; }
+
+	/** Gets an specific direction. */
+	char direction(unsigned int i){ return dDirections[i]; }
+
 	/** Given a previous direction and a relative direction, returns the corresponding delta vector.
 	 * Say we have a sequence of beads b1 and b2, each with their own coordinates, and that we want to add
 	 *   a new bead b3 whose relative direction is D from b2 and b1.
@@ -37,7 +55,7 @@ struct ACOSolution {
 	 * \param dir relative direction to follow, starting from the given previous direction.
 	 * \return the delta direction such that (b2 + delta) is the position of the next bead (say, b3)
 	 */
-	static vec3<int> get_direction_vector(vec3<int> prevDirection, char dir);
+	static vec3<int> DIRECTION_VECTOR(vec3<int> prevDirection, char dir);
 
 	/** Returns the relative direction between the last 2 beads.
 	 * \return (b2 - b1) where b2 is the last bead and b1 is the second last bead.
@@ -49,8 +67,14 @@ struct ACOSolution {
 	 */
 	int count_contacts(const HPChain &chain) const;
 
+	/** Returns current error state. */
+	bool has_error() { return dError; }
+
+	/** Sets error to signalize existence of an error. */
+	void set_error() { dError = true; }
+
 	/** Clears the internal error state. */
-	void clear_error();
+	void clear_error() { dError = false; };
 };
 
 /** Prints coordinates and directions of the solution.
@@ -72,7 +96,7 @@ const char ACOSolution::DIR_TO_CHAR(char d){
 }
 
 inline
-vec3<int> ACOSolution::get_direction_vector(vec3<int> prevDirection, char dir){
+vec3<int> ACOSolution::DIRECTION_VECTOR(vec3<int> prevDirection, char dir){
 	if(dir == FRONT){
 		return prevDirection;
 	}
@@ -127,16 +151,11 @@ int ACOSolution::count_contacts(const HPChain &chain) const {
 }
 
 inline
-void ACOSolution::clear_error(){
-	this->dError = false;
-}
-
-inline
 std::ostream& operator<<(std::ostream& stream, const ACOSolution &sol){
-	for(const vec3<int> &point: sol.dVector)
+	for(const vec3<int> &point: sol.vector())
 		stream << point << " ";
 	stream << "\n";
-	for(char c: sol.dDirections)
+	for(char c: sol.directions())
 		stream << ACOSolution::DIR_TO_CHAR(c);
 
 	return stream;
