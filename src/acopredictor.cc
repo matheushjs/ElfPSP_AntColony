@@ -69,13 +69,11 @@ ACOPredictor::get_heuristics(const vector<vec3<int>> &possiblePos, const vector<
 	// Bead being added is H or P?
 	char horp = hpchain[beadVector.size()];
 	
-	if(horp == 'P')
-		return vector<double>(5, 1.0);
-
 	int contacts[5] = { 0, 0, 0, 0, 0 };
 	int collisions[5] = { 0, 0, 0, 0, 0 };
 
 	// Get number of contacts per possible next position
+	// Here we assume bead is hydrophobic
 	for(int i = 0; i < 5; i++){
 		vec3<int> nextPos = possiblePos[i];
 		for(unsigned j = 0; j < beadVector.size(); j++){
@@ -90,11 +88,21 @@ ACOPredictor::get_heuristics(const vector<vec3<int>> &possiblePos, const vector<
 		}
 	}
 
-	for(int i = 0; i < 5; i++){
-		if(collisions[i] == 0)
-			retval[i] = 1.0 + contacts[i];
-		else
-			retval[i] = 0.0;
+	// If bead is P, we disregard the 'contacts' vector
+	if(horp == 'P'){
+		for(int i = 0; i < 5; i++){
+			if(collisions[i] == 0)
+				retval[i] = 1.0;
+			else
+				retval[i] = 0.0;
+		}
+	} else {
+		for(int i = 0; i < 5; i++){
+			if(collisions[i] == 0)
+				retval[i] = 1.0 + contacts[i];
+			else
+				retval[i] = 0.0;
+		}
 	}
 
 	return retval;
