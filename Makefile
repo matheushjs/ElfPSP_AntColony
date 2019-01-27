@@ -17,7 +17,7 @@ prog_bt: main.o hpchain.o config.o acopredictor_backtracking.o
 prog_nbt: main.o hpchain.o config.o acopredictor_nobacktracking.o
 	g++ $(CFLAGS) $^ -o $@
 
-test: test.o hpchain.o config.o acopredictor.o
+test: test.o hpchain.o config.o acopredictor_nobacktracking.o
 	g++ $(CFLAGS) $^ -o $@
 
 clean:
