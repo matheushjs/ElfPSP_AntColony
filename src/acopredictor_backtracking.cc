@@ -79,14 +79,13 @@ ACOPredictor::get_heuristics(const vector<vec3<int>> &possiblePos, const vector<
 	for(int i = 0; i < 5; i++){
 		vec3<int> nextPos = possiblePos[i];
 		for(unsigned j = 0; j < beadVector.size(); j++){
-			vec3<int> bead = beadVector[j];
+			int norm1 = (nextPos - beadVector[j]).norm1();
 
-			if(nextPos == bead)
+			if(norm1 == 0){
 				collisions[i]++;
-
-			int norm1 = (nextPos - bead).norm1();
-			if(norm1 == 1 && hpchain[j] == 'H')
+			} else if(norm1 == 1 && hpchain[j] == 'H'){
 				contacts[i] += 1;
+			}
 		}
 	}
 
