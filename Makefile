@@ -1,5 +1,5 @@
 
-CFLAGS=-Wall -O3 -I src -std=c++11
+CFLAGS=-Wall -O2 -I src -std=c++11
 
 # We take as a rule that if any API changes, everything should be rebuilt.
 # Same goes for the makefile itself
