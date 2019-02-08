@@ -3,6 +3,7 @@
 /** \file acosolution.h */
 
 #include <vector>
+#include <random>
 #include "vec3.h"
 
 /** Encapsulates a solution that is built by an ant.
@@ -66,6 +67,8 @@ public:
 	 * \param chain The HPChain of the protein that this ACOSolution represents.
 	 */
 	int count_contacts(const HPChain &chain) const;
+
+	void perturb_one(std::mt19937 &dRandGen);
 
 	/** Returns current error state. */
 	bool has_error() { return dError; }
@@ -148,6 +151,25 @@ int ACOSolution::count_contacts(const HPChain &chain) const {
 	}
 
 	return contacts;
+}
+
+inline
+void ACOSolution::perturb_one(std::mt19937 &gen){
+	std::uniform_real_distribution<> randDist(0.0, 1.0);
+
+	// Decide where to perturb
+	int randPos = randDist(gen) * dDirections.size();
+
+	// Perturb that position
+	dDirections[randPos] = randDist(gen) * 5;
+
+	// Rebuild the vector
+	dVector = {{0,0,0}, {1,0,0}};
+	for(char dir: dDirections){
+		vec3<int> prev = previous_direction();
+		vec3<int> delta = ACOSolution::DIRECTION_VECTOR(prev, dir);
+		dVector.push_back(dVector.back() + delta);
+	}
 }
 
 inline
