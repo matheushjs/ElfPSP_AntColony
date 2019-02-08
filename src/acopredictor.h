@@ -66,6 +66,28 @@ public:
 	struct Results predict();
 };
 
+/** Deposits pheromones along the trail followed by the given ant.
+ *
+ * \param directions Vector of directions followed by the ant.
+ * \param nContacts Number of H-H contacts in the protein built by the given ant.
+ */
+inline
+void ACOPredictor::ant_deposit_pheromone(const std::vector<char> &directions, int nContacts){
+	for(unsigned i = 0; i < directions.size(); i++){
+		pheromone(i, directions[i]) += nContacts / dHCount;
+	}
+}
+
+/** Each pheromone is multiplied by (1-p) where p is the persistence defined by the user. */
+inline
+void ACOPredictor::evaporate_pheromone(){
+	for(int i = 0; i < dNMovElems; i++){
+		for(int j = 0; j < 5; j++){
+			pheromone(i, j) *= (1 - dEvap);
+		}
+	}
+}
+
 /** Returns the pheromone at step i and direction d. */
 inline double &ACOPredictor::pheromone(int i, int d) const {
 	return dPheromone[i*5 + d];
