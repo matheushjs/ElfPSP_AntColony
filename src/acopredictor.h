@@ -55,9 +55,10 @@ public:
 	/** The destructor frees memory allocated for holding internal data structures. */
 	~ACOPredictor();
 
+	/** Structures used to return results to the callee. */
 	struct Results {
-		ACOSolution solution;
-		int contacts;
+		ACOSolution solution; /**< Best protein obtained by the ACO algorithm. */
+		int contacts; /**< Number of H-H contacts within `solution`. */
 	};
 
 	/** Runs the ACO optimization to predict the protein structure.

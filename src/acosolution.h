@@ -68,6 +68,9 @@ public:
 	 */
 	int count_contacts(const HPChain &chain) const;
 
+	/** The solution has a vector of N directions, this procedure chooses a random direction and randomizes it.
+	 * After randomizing it, the internal bead coordinates are also recalculated.
+	 */
 	void perturb_one(std::mt19937 &dRandGen);
 
 	/** Returns current error state. */
