@@ -156,7 +156,6 @@ ACOSolution ACOPredictor::ant_develop_solution() {
 		// If all heuristics are 0, there is no possible next direction to take.
 		double sum = heurs[0] + heurs[1] + heurs[2] + heurs[3] + heurs[4];
 		if(sum == 0){
-			// TODO: BACKTRACK
 			sol.set_error();
 			return sol;
 		}
