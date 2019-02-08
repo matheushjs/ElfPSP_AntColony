@@ -11,13 +11,13 @@ VPATH=src/
 all:
 	make prog_bt prog_nbt test
 
-prog_bt: main.o hpchain.o config.o acopredictor_backtracking.o
+prog_bt: main.o hpchain.o config.o acopredictor.o acopredictor_backtracking.o
 	g++ $(CFLAGS) $^ -o $@
 
-prog_nbt: main.o hpchain.o config.o acopredictor_nobacktracking.o
+prog_nbt: main.o hpchain.o config.o acopredictor.o acopredictor_nobacktracking.o
 	g++ $(CFLAGS) $^ -o $@
 
-test: test.o hpchain.o config.o acopredictor_nobacktracking.o
+test: test.o hpchain.o config.o acopredictor.o acopredictor_nobacktracking.o
 	g++ $(CFLAGS) $^ -o $@
 
 clean:
@@ -31,6 +31,7 @@ main.o: main.cc $(HARD_DEPS)
 test.o: test.cc $(HARD_DEPS)
 hpchain.o: hpchain.cc $(HARD_DEPS)
 config.o: config.cc $(HARD_DEPS)
+acopredictor.o: acopredictor.cc $(HARD_DEPS)
 acopredictor_backtracking.o: acopredictor_backtracking.cc $(HARD_DEPS)
 acopredictor_nobacktracking.o: acopredictor_nobacktracking.cc $(HARD_DEPS)
 

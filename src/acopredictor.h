@@ -65,3 +65,13 @@ public:
 	 * \return the best solution found by the optimization algorithm. */
 	struct Results predict();
 };
+
+/** Returns the pheromone at step i and direction d. */
+inline double &ACOPredictor::pheromone(int i, int d) const {
+	return dPheromone[i*5 + d];
+}
+
+/** Returns a random number in [0,1). */
+inline double ACOPredictor::random() {
+	return dRandDist(dRandGen);
+}
