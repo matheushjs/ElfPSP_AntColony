@@ -2,6 +2,7 @@
 #include <vector>
 #include <cmath>
 #include <memory>
+#include <stack>
 
 #include "acopredictor.h"
 
@@ -9,6 +10,8 @@ using std::cout;
 using std::cerr;
 using std::vector;
 using std::string;
+using std::stack;
+using std::unique_ptr;
 
 ACOPredictor::ACOPredictor(
 	const HPChain &hpchain, int cycles, int nAnts,
@@ -113,8 +116,13 @@ ACOPredictor::get_heuristics(const vector<vec3<int>> &possiblePos, const vector<
 inline vector<double> ACOPredictor::get_probabilities(int movIndex, vector<double> heuristics) const {
 	using std::pow;
 
+	// If all heuristics are 0, it would give us a division by 0.
+	double sum = heuristics[0] + heuristics[1] + heuristics[2] + heuristics[3] + heuristics[4];
+	if(sum == 0)
+		return {0, 0, 0, 0, 0};
+
 	vector<double> retval(5);
-	double sum = 0;
+	sum = 0;
 
 	for(int d = 0; d < 5; d++){
 		double A = pow(pheromone(movIndex, d), dAlpha);
@@ -233,7 +241,7 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 		}
 
 		// Calculate contacts
-		std::unique_ptr<int[]> nContacts(new int[antsSolutions.size()]);
+		unique_ptr<int[]> nContacts(new int[antsSolutions.size()]);
 		for(unsigned j = 0; j < antsSolutions.size(); j++)
 			nContacts[j] = antsSolutions[j].count_contacts(dHPChain);
 
