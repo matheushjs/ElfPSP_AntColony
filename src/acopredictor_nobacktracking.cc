@@ -238,6 +238,16 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 		for(unsigned j = 0; j < antsSolutions.size(); j++)
 			nContacts[j] = antsSolutions[j].count_contacts(dHPChain);
 
+		// Perform local search
+		for(unsigned j = 0; j < antsSolutions.size(); j++){
+			ACOSolution tentative = antsSolutions[j];
+			tentative.perturb_one(dRandGen);
+			int contacts = tentative.count_contacts(dHPChain);
+			if(contacts > nContacts[j]){
+				antsSolutions[j] = tentative;
+			}
+		}
+
 		// Check best protein
 		for(unsigned j = 0; j < antsSolutions.size(); j++){
 			if(nContacts[j] > bestContacts){
