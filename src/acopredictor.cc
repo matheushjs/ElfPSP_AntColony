@@ -106,13 +106,8 @@ ACOPredictor::get_heuristics(const vector<vec3<int>> &possiblePos, const vector<
 vector<double> ACOPredictor::get_probabilities(int movIndex, vector<double> heuristics) const {
 	using std::pow;
 
-	// If all heuristics are 0, it would give us a division by 0.
-	double sum = heuristics[0] + heuristics[1] + heuristics[2] + heuristics[3] + heuristics[4];
-	if(sum == 0)
-		return {0, 0, 0, 0, 0};
-
 	vector<double> retval(5);
-	sum = 0;
+	double sum = 0;
 
 	for(int d = 0; d < 5; d++){
 		double A = pow(pheromone(movIndex, d), dAlpha);
@@ -122,6 +117,10 @@ vector<double> ACOPredictor::get_probabilities(int movIndex, vector<double> heur
 		sum += aux;
 		retval[d] = aux;
 	}
+
+	// If sum is 0, would give us division by 0
+	if(sum == 0)
+		return {0.2, 0.2, 0.2, 0.2, 0.2};
 
 	for(int d = 0; d < 5; d++){
 		retval[d] /= sum;
