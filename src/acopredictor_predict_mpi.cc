@@ -19,6 +19,7 @@ using std::make_pair;
 
 void *serialize_solution(const vector<char> &directions, int nContacts, int &resultingBufferSize){
 	int nDirections = directions.size();
+	cout << nDirections << "\n";
 
 	int bufferSize = 0;
 	bufferSize += sizeof(nDirections);
@@ -74,15 +75,7 @@ void recv_solution(vector<char> &directions, int &contacts, int recvBufSize, int
 	void *recvBuffer = (void *) new char[recvBufSize];
 	MPI_Recv(recvBuffer, recvBufSize, MPI_CHAR, srcIdx, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 	directions = deserialize_solution(recvBuffer, contacts);
-}
-
-void ring_exchange(
-		const vector<char> &localDirections,
-		int localContacts,
-		vector<char> &receivedDirections,
-		int &receivedNContacts)
-{
-
+	delete[] (char *) recvBuffer;
 }
 
 struct ACOPredictor::Results ACOPredictor::predict(){
@@ -216,6 +209,10 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 		*/
 
 		// if(i%5 == 0) cout << "Cycle: " << i << "\n";
+
+		if(myRank == 0){
+			//cout << i << "," << bestContacts << "\n";
+		}
 	}
 
 	// Gather solutions in node 0
