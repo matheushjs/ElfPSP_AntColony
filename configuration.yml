@@ -1,12 +1,14 @@
 HP_CHAIN: PPPPPPPPHHHHHHHHHHHHHHHHPPPPPPPPPPPPPHHHHHHHHHHHHH
 
-CYCLES: 100
+CYCLES: 1000
 N_ANTS: 100
 ACO_ALPHA: 1E0
 ACO_BETA: 1E0
 ACO_EVAPORATION: 0.1
 
-RANDOM_SEED: -1
+EXCHANGED_ANTS: 3
+
+RANDOM_SEED: 72
 
 STRUCTURE_FILENAME: output.json
 
@@ -20,6 +22,9 @@ STRUCTURE_FILENAME: output.json
 # ACO_BETA         Parameter 'beta' of the ACO algorithm, which represents the weight of the heuristic values on ant's decision
 # ACO_EVAPORATION  Evaporation rate of the pheromones in the pheromone matrix.
 #                    At each iteration, pheromones are multiplied by (1-p), where p is this parameter.
+#
+# EXCHANGED_ANTS     If running the MPI multiple colony version, how many ants should be exchanged
+#                      between nodes at every colony cycle?
 #
 # RANDOM_SEED    seed for the random number generator. If negative, seed is chosen randomly.
 #
