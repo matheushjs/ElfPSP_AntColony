@@ -17,66 +17,74 @@ using std::unique_ptr;
 using std::pair;
 using std::make_pair;
 
-void *serialize_solution(const vector<char> &directions, int nContacts, int &resultingBufferSize){
-	int nDirections = directions.size();
-	cout << nDirections << "\n";
+class InterProcess {
+	int dBufSize;
+	void *dSendBuffer;
+	void *dRecvBuffer;
 
-	int bufferSize = 0;
-	bufferSize += sizeof(nDirections);
-	bufferSize += sizeof(nContacts);
-	bufferSize += sizeof(char) * nDirections;
+	void serialize_solution(const vector<char> &directions, int nContacts){
+		int nDirections = directions.size();
 
-	// Will contain [nDirections] [nContacts] [direction1, direction2, ..., directionN]
-	void *buffer = (void *) new char[bufferSize];
-	
-	int *intBuffer = (int*) buffer;
-	*intBuffer = nDirections;
-	intBuffer++;
-	*intBuffer = nContacts;
-	intBuffer++;
+		// Buffer will contain [nDirections] [nContacts] [direction1, direction2, ..., directionN]
+		int *intBuffer = (int*) dSendBuffer;
+		*intBuffer = nDirections;
+		intBuffer++;
+		*intBuffer = nContacts;
+		intBuffer++;
 
-	char *charBuffer = (char*) intBuffer;
-	memcpy(charBuffer, directions.data(), sizeof(char) * nDirections);
-
-	// At this point, 'buffer' is filled
-
-	resultingBufferSize = bufferSize;
-	return buffer;
-}
-
-vector<char> deserialize_solution(void *bundle, int &nContacts){
-	int *intPointer = (int *) bundle;
-
-	int nDirections = *intPointer;
-	intPointer++;
-	nContacts = *intPointer;
-	intPointer++;
-
-	char *charPointer = (char *) intPointer;
-
-	vector<char> directions;
-	directions.reserve(nDirections);
-	for(int i = 0; i < nDirections; i++){
-		directions.push_back(*charPointer);
-		charPointer += 1;
+		char *charBuffer = (char*) intBuffer;
+		memcpy(charBuffer, directions.data(), sizeof(char) * nDirections);
 	}
 
-	return directions;
-}
+	vector<char> deserialize_solution(int &nContacts){
+		int *intPointer = (int *) dRecvBuffer;
 
-void send_solution(const vector<char> &directions, int contacts, int destIdx){
-	int bufferSize;
-	void *sendBuffer = serialize_solution(directions, contacts, bufferSize);
-	MPI_Send(sendBuffer, bufferSize, MPI_CHAR, destIdx, 0, MPI_COMM_WORLD);
-	delete[] (char *) sendBuffer;
-}
+		int nDirections = *intPointer;
+		intPointer++;
+		nContacts = *intPointer;
+		intPointer++;
 
-void recv_solution(vector<char> &directions, int &contacts, int recvBufSize, int srcIdx){
-	void *recvBuffer = (void *) new char[recvBufSize];
-	MPI_Recv(recvBuffer, recvBufSize, MPI_CHAR, srcIdx, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-	directions = deserialize_solution(recvBuffer, contacts);
-	delete[] (char *) recvBuffer;
-}
+		char *charPointer = (char *) intPointer;
+
+		vector<char> directions;
+		directions.reserve(nDirections);
+		for(int i = 0; i < nDirections; i++){
+			directions.push_back(*charPointer);
+			charPointer += 1;
+		}
+
+		return directions;
+	}
+
+public:
+	InterProcess(int numDirections)
+	  : dBufSize(2*sizeof(int) + numDirections*sizeof(char)),
+	    dSendBuffer((void*) new char[dBufSize]),
+		dRecvBuffer((void*) new char[dBufSize])
+	{}
+
+	~InterProcess(){
+		delete[] (char*) dSendBuffer;
+		delete[] (char*) dRecvBuffer;
+	}
+
+	void send_solution(const vector<char> &directions, int contacts, int destIdx){
+		// Serialize solution into dSendBuffer
+		serialize_solution(directions, contacts);
+
+		// Send it
+		MPI_Send(dSendBuffer, dBufSize, MPI_CHAR, destIdx, 0, MPI_COMM_WORLD);
+	}
+
+	void recv_solution(vector<char> &directions, int &contacts, int srcIdx){
+		// Receive data into dRecvBuffer
+		MPI_Recv(dRecvBuffer, dBufSize, MPI_CHAR, srcIdx, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+		// Deserialize recvBuffer into data
+		directions = deserialize_solution(contacts);
+	}
+};
+
 
 struct ACOPredictor::Results ACOPredictor::predict(){
 	MPI_Init(NULL, NULL);
@@ -103,6 +111,7 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 		exit(EXIT_FAILURE);
 	}
 
+	InterProcess interProc(dNMovElems);
 	ACOSolution bestSol;
 	int bestContacts = -1;
 
@@ -170,13 +179,12 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 			}
 
 			// Perform ring-exchange
-			int recvBufSize = sizeof(int) + sizeof(int) + sizeof(char) * bestSol.directions().size();
 			if(myRank%2 == 0){
-				send_solution(sendDirections, sendNContacts, (myRank+1)%commSize);
-				recv_solution(receivedDirections, receivedNContacts, recvBufSize, (myRank-1+commSize)%commSize);
+				interProc.send_solution(sendDirections, sendNContacts, (myRank+1)%commSize);
+				interProc.recv_solution(receivedDirections, receivedNContacts, (myRank-1+commSize)%commSize);
 			} else {
-				recv_solution(receivedDirections, receivedNContacts, recvBufSize, (myRank-1+commSize)%commSize);
-				send_solution(sendDirections, sendNContacts, (myRank+1)%commSize);
+				interProc.recv_solution(receivedDirections, receivedNContacts, (myRank-1+commSize)%commSize);
+				interProc.send_solution(sendDirections, sendNContacts, (myRank+1)%commSize);
 			}
 
 			//cout << "I am " << myRank << ", sent " << sendNContacts << " and received " << receivedNContacts << "\n";
@@ -211,13 +219,12 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 		// if(i%5 == 0) cout << "Cycle: " << i << "\n";
 
 		if(myRank == 0){
-			//cout << i << "," << bestContacts << "\n";
+			cout << i << "," << bestContacts << "\n";
 		}
 	}
 
 	// Gather solutions in node 0
 	if(myRank == 0){
-		int recvBufSize = sizeof(int) + sizeof(int) + sizeof(char) * bestSol.directions().size();
 		vector<char> receivedDirections;
 		int receivedNContacts;
 
@@ -225,7 +232,7 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 
 		// Check which one is best
 		for(int i = 1; i < commSize; i++){
-			recv_solution(receivedDirections, receivedNContacts, recvBufSize, i);
+			interProc.recv_solution(receivedDirections, receivedNContacts, i);
 			//cout << "Solution from node " << i << " is " << receivedNContacts << ".\n";
 			if(receivedNContacts > bestContacts){
 				bestSol = ACOSolution(receivedDirections);
@@ -233,7 +240,7 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 			}
 		}
 	} else {
-		send_solution(bestSol.directions(), bestContacts, 0);
+		interProc.send_solution(bestSol.directions(), bestContacts, 0);
 	}
 
 	Results res = {
