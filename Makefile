@@ -17,6 +17,9 @@ all:
 prog_bt_mpi: main.o hpchain.o config.o acopredictor.o acopredictor_predict_mpi.o acopredictor_backtracking.o
 	g++ $(CFLAGS) $(MPI_CFLAGS) $^ -o $@ $(MPI_LIBS)
 
+prog_nbt_mpi: main.o hpchain.o config.o acopredictor.o acopredictor_predict_mpi.o acopredictor_nobacktracking.o
+	g++ $(CFLAGS) $(MPI_CFLAGS) $^ -o $@ $(MPI_LIBS)
+
 prog_bt: main.o hpchain.o config.o acopredictor.o acopredictor_predict_sequential.o acopredictor_backtracking.o
 	g++ $(CFLAGS) $^ -o $@
 
