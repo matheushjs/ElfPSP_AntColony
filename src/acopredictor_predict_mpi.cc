@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <queue>
 #include <cmath>
 #include <cstring>
 #include <memory>
@@ -10,8 +11,11 @@
 using std::cout;
 using std::cerr;
 using std::vector;
+using std::priority_queue;
 using std::string;
 using std::unique_ptr;
+using std::pair;
+using std::make_pair;
 
 void *serialize_solution(const vector<char> &directions, int nContacts, int &resultingBufferSize){
 	int nDirections = directions.size();
@@ -101,6 +105,11 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 		exit(EXIT_FAILURE);
 	}
 
+	if(dExchangedAnts <= 0){
+		cerr << "Ran multi-colony program but specified weird number of EXCHANGED ANTS per cycle. Please check the configuration file.\n";
+		exit(EXIT_FAILURE);
+	}
+
 	ACOSolution bestSol;
 	int bestContacts = -1;
 
@@ -142,22 +151,46 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 		for(unsigned j = 0; j < antsSolutions.size(); j++)
 			ant_deposit_pheromone(antsSolutions[j].directions(), nContacts[j]);
 
-		// Exchange solutions with other colonies
-		vector<char> receivedDirections;
-		int receivedNContacts;
+		// We will need to select the best proteins of current cycle, so we place them all in a priority queue
+		auto cmp = [](pair<int,ACOSolution&> a, pair<int,ACOSolution&> b){ return a.first < b.first; };
+		priority_queue<pair<int,ACOSolution&>, vector<pair<int,ACOSolution&>>, decltype(cmp)> que(cmp);
+		for(unsigned int j = 0; j < antsSolutions.size(); j++)
+			que.push(pair<int,ACOSolution&>(nContacts[j], antsSolutions[j]));
 
-		// Perform ring-exchange
-		int recvBufSize = sizeof(int) + sizeof(int) + sizeof(char) * bestSol.directions().size();
-		if(myRank%2 == 0){
-			send_solution(bestSol.directions(), bestContacts, (myRank+1)%commSize);
-			recv_solution(receivedDirections, receivedNContacts, recvBufSize, (myRank-1+commSize)%commSize);
-		} else {
-			recv_solution(receivedDirections, receivedNContacts, recvBufSize, (myRank-1+commSize)%commSize);
-			send_solution(bestSol.directions(), bestContacts, (myRank+1)%commSize);
+		// Exchange N solutions with other colonies
+		for(int j = 0; j < dExchangedAnts; j++){
+			vector<char> receivedDirections;
+			int receivedNContacts;
+			vector<char> sendDirections;
+			int sendNContacts;
+
+			if(j == 0){
+				// On first iteration we exchange globally best solutions
+				sendDirections = bestSol.directions();
+				sendNContacts = bestContacts;
+			} else {
+				// On other iterations, we exchange best solutions within the pool generated in the current cycle
+				pair<int,ACOSolution&> p = que.top();
+				que.pop();
+				sendDirections = p.second.directions();
+				sendNContacts = p.first;
+			}
+
+			// Perform ring-exchange
+			int recvBufSize = sizeof(int) + sizeof(int) + sizeof(char) * bestSol.directions().size();
+			if(myRank%2 == 0){
+				send_solution(sendDirections, sendNContacts, (myRank+1)%commSize);
+				recv_solution(receivedDirections, receivedNContacts, recvBufSize, (myRank-1+commSize)%commSize);
+			} else {
+				recv_solution(receivedDirections, receivedNContacts, recvBufSize, (myRank-1+commSize)%commSize);
+				send_solution(sendDirections, sendNContacts, (myRank+1)%commSize);
+			}
+
+			//cout << "I am " << myRank << ", sent " << sendNContacts << " and received " << receivedNContacts << "\n";
+
+			// Deposit pheromones for received ant
+			ant_deposit_pheromone(receivedDirections, receivedNContacts);
 		}
-
-		// Deposit pheromones for received colony
-		ant_deposit_pheromone(receivedDirections, receivedNContacts);
 
 		/*
 		if(myRank == 0){
