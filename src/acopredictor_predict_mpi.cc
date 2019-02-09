@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <cstring>
 #include <memory>
 #include <mpi.h>
 
@@ -12,25 +13,85 @@ using std::vector;
 using std::string;
 using std::unique_ptr;
 
-void slave_routine(){
-	cout << "I am a slave\n";
+void *serialize_solution(const vector<char> &directions, int nContacts, int &resultingBufferSize){
+	int nDirections = directions.size();
+
+	int bufferSize = 0;
+	bufferSize += sizeof(nDirections);
+	bufferSize += sizeof(nContacts);
+	bufferSize += sizeof(char) * nDirections;
+
+	// Will contain [nDirections] [nContacts] [direction1, direction2, ..., directionN]
+	void *buffer = (void *) new char[bufferSize];
+	
+	int *intBuffer = (int*) buffer;
+	*intBuffer = nDirections;
+	intBuffer++;
+	*intBuffer = nContacts;
+	intBuffer++;
+
+	char *charBuffer = (char*) intBuffer;
+	memcpy(charBuffer, directions.data(), sizeof(char) * nDirections);
+
+	// At this point, 'buffer' is filled
+
+	resultingBufferSize = bufferSize;
+	return buffer;
 }
 
-void split_masterslave(MPI_Comm comm){
-	int myRank, commSize;
-	MPI_Comm_rank(comm, &myRank);
-	MPI_Comm_size(comm, &commSize);
+vector<char> deserialize_solution(void *bundle, int &nContacts){
+	int *intPointer = (int *) bundle;
 
-	if(myRank != 0){
-		slave_routine();
-		exit(EXIT_SUCCESS);
+	int nDirections = *intPointer;
+	intPointer++;
+	nContacts = *intPointer;
+	intPointer++;
+
+	char *charPointer = (char *) intPointer;
+
+	vector<char> directions;
+	directions.reserve(nDirections);
+	for(int i = 0; i < nDirections; i++){
+		directions.push_back(*charPointer);
+		charPointer += 1;
 	}
+
+	return directions;
+}
+
+void send_solution(const vector<char> &directions, int contacts, int destIdx){
+	int bufferSize;
+	void *sendBuffer = serialize_solution(directions, contacts, bufferSize);
+	MPI_Send(sendBuffer, bufferSize, MPI_CHAR, destIdx, 0, MPI_COMM_WORLD);
+	delete[] (char *) sendBuffer;
+}
+
+void recv_solution(vector<char> &directions, int &contacts, int recvBufSize, int srcIdx){
+	void *recvBuffer = (void *) new char[recvBufSize];
+	MPI_Recv(recvBuffer, recvBufSize, MPI_CHAR, srcIdx, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	directions = deserialize_solution(recvBuffer, contacts);
+}
+
+void ring_exchange(
+		const vector<char> &localDirections,
+		int localContacts,
+		vector<char> &receivedDirections,
+		int &receivedNContacts)
+{
+
 }
 
 struct ACOPredictor::Results ACOPredictor::predict(){
 	MPI_Init(NULL, NULL);
 
-	split_masterslave(MPI_COMM_WORLD);
+	int myRank, commSize;
+	MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+	MPI_Comm_size(MPI_COMM_WORLD, &commSize);
+
+	if(commSize == 1){
+		cerr << "Ran multi-colony program with only one node! This is not allowed.\n";
+		exit(EXIT_FAILURE);
+	}
 
 	ACOSolution bestSol;
 	int bestContacts = -1;
@@ -72,6 +133,30 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 		// Deposit pheromones
 		for(unsigned j = 0; j < antsSolutions.size(); j++)
 			ant_deposit_pheromone(antsSolutions[j].directions(), nContacts[j]);
+
+		// Exchange solutions with other colonies
+		vector<char> receivedDirections;
+		int receivedNContacts;
+
+		// Perform ring-exchange
+		int recvBufSize = sizeof(int) + sizeof(int) + sizeof(char) * bestSol.directions().size();
+		if(myRank%2 == 0){
+			send_solution(bestSol.directions(), bestContacts, (myRank+1)%commSize);
+			recv_solution(receivedDirections, receivedNContacts, recvBufSize, (myRank-1+commSize)%commSize);
+		} else {
+			recv_solution(receivedDirections, receivedNContacts, recvBufSize, (myRank-1+commSize)%commSize);
+			send_solution(bestSol.directions(), bestContacts, (myRank+1)%commSize);
+		}
+
+		// Deposit pheromones for received colony
+		ant_deposit_pheromone(receivedDirections, receivedNContacts);
+
+		if(myRank == 0){
+			cout << receivedNContacts << ": ";
+			for(char c: receivedDirections){
+				cout << (int) c << " ";
+			} cout << "\n";
+		}
 
 		// Evaporate pheromones
 		evaporate_pheromone();
