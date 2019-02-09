@@ -19,6 +19,9 @@ public:
 	/** Default constructor; starts as an empty solution. */
 	ACOSolution();
 
+	/** Constructs a solution from a vector of directions. */
+	ACOSolution(std::vector<char> &directions);
+
 	/** Static constants representing relative directions. */
 	static const char UP    = 0; /**< Relative direction. */
 	static const char DOWN  = 1; /**< Relative direction. */
@@ -94,6 +97,18 @@ std::ostream& operator<<(std::ostream& stream, const ACOSolution &sol);
 inline ACOSolution::ACOSolution()
 : dVector({{0,0,0}, {1,0,0}}), dError(false)
 {}
+
+
+inline ACOSolution::ACOSolution(std::vector<char> &directions)
+: dVector({{0,0,0}, {1,0,0}}), dDirections(directions), dError(false)
+{
+	// We build the protein coordinates, based on the given directions vector
+	for(char dir: directions){
+		vec3<int> prev = this->previous_direction();
+		vec3<int> delta = DIRECTION_VECTOR(prev, dir);
+		dVector.push_back(dVector.back() + delta);
+	}
+}
 
 inline
 const char ACOSolution::DIR_TO_CHAR(char d){
