@@ -25,6 +25,7 @@ class ACOPredictor {
 	int dNMovElems;
 	int dHCount; /**< Stores the number of hydrophobic (H) beads in the protein */
 	double *dPheromone; /**< Pheromone matrix. */
+	int dRandSeed; /**< Random seed. -1 if seed is to be chosen randomly. */
 	std::mt19937 dRandGen; /**< Random number generator used throughout the ACO algorithm. */
 	std::uniform_real_distribution<> dRandDist; /**< Random distribution that uses `dRandGen` to generate random numbers. */
 

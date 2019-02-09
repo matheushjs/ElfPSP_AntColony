@@ -88,6 +88,14 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 	MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
 	MPI_Comm_size(MPI_COMM_WORLD, &commSize);
 
+	// Since we are running multiple processes, we have to guarantee they use different random seeds
+	if(dRandSeed < 0){
+		std::random_device rd;
+		dRandGen.seed(rd() + myRank);
+	} else {
+		dRandGen.seed(dRandSeed + myRank);
+	}
+
 	if(commSize == 1){
 		cerr << "Ran multi-colony program with only one node! This is not allowed.\n";
 		exit(EXIT_FAILURE);
@@ -183,11 +191,15 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 		vector<char> receivedDirections;
 		int receivedNContacts;
 
+		//cout << "Solution from node 0 is " << bestContacts << ".\n";
+
 		// Check which one is best
 		for(int i = 1; i < commSize; i++){
 			recv_solution(receivedDirections, receivedNContacts, recvBufSize, i);
+			//cout << "Solution from node " << i << " is " << receivedNContacts << ".\n";
 			if(receivedNContacts > bestContacts){
-				cout << "Solution from node " << i << " is better than ours.\n";
+				bestSol = ACOSolution(receivedDirections);
+				bestContacts = receivedNContacts;
 			}
 		}
 	} else {

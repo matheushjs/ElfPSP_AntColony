@@ -22,6 +22,7 @@ ACOPredictor::ACOPredictor(
   dEvap(evap),
   dNMovElems(hpchain.length() - 2),
   dHCount(0),
+  dRandSeed(randSeed),
   dRandDist(0.0, 1.0)
 {
 	dPheromone = new double[dNMovElems*5];
