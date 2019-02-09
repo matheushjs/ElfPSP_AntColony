@@ -75,7 +75,8 @@ int main(int argc, char *argv[]){
 		conf.aco_alpha(),
 		conf.aco_beta(),
 		conf.aco_evaporation(),
-		conf.random_seed()
+		conf.random_seed(),
+		conf.exchanged_ants()
 	);
 
 	struct ACOPredictor::Results result = predictor.predict();

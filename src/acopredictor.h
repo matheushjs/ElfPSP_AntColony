@@ -28,6 +28,7 @@ class ACOPredictor {
 	int dRandSeed; /**< Random seed. -1 if seed is to be chosen randomly. */
 	std::mt19937 dRandGen; /**< Random number generator used throughout the ACO algorithm. */
 	std::uniform_real_distribution<> dRandDist; /**< Random distribution that uses `dRandGen` to generate random numbers. */
+	int dExchangedAnts; /**< Number of ants that each MPI node should exchange. */
 
 	double &pheromone(int i, int d) const;
 	double random();
@@ -51,7 +52,8 @@ public:
 	 * \param randSeed random seed to pass to the random number generator. If negative, a random seed is chosen.
 	 */
 	ACOPredictor(const HPChain &chain, int cycles, int nAnts,
-	             double alpha, double beta, double evap, int randSeed = -1);
+	             double alpha, double beta, double evap, int randSeed = -1,
+	             int exchangedAnts = -1);
 
 	/** The destructor frees memory allocated for holding internal data structures. */
 	~ACOPredictor();

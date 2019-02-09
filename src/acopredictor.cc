@@ -13,7 +13,8 @@ using std::unique_ptr;
 
 ACOPredictor::ACOPredictor(
 	const HPChain &hpchain, int cycles, int nAnts,
-	double alpha, double beta, double evap, int randSeed)
+	double alpha, double beta, double evap, int randSeed,
+	int exchangedAnts)
 : dHPChain(hpchain),
   dCycles(cycles),
   dNAnts(nAnts),
@@ -23,7 +24,8 @@ ACOPredictor::ACOPredictor(
   dNMovElems(hpchain.length() - 2),
   dHCount(0),
   dRandSeed(randSeed),
-  dRandDist(0.0, 1.0)
+  dRandDist(0.0, 1.0),
+  dExchangedAnts(exchangedAnts)
 {
 	dPheromone = new double[dNMovElems*5];
 	std::fill(dPheromone, dPheromone + dNMovElems*5, 0.1);
