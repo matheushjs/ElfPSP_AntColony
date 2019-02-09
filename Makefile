@@ -12,7 +12,7 @@ HARD_DEPS=Makefile hpchain.h config.h vec3.h acopredictor.h acosolution.h
 VPATH=src/
 
 all:
-	make prog_bt prog_nbt prog_bt_mpi test
+	make prog_bt prog_nbt prog_bt_mpi prog_nbt_mpi test
 
 prog_bt_mpi: main.o hpchain.o config.o acopredictor.o acopredictor_predict_mpi.o acopredictor_backtracking.o
 	g++ $(CFLAGS) $(MPI_CFLAGS) $^ -o $@ $(MPI_LIBS)
