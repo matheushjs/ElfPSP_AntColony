@@ -151,12 +151,14 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 		// Deposit pheromones for received colony
 		ant_deposit_pheromone(receivedDirections, receivedNContacts);
 
+		/*
 		if(myRank == 0){
 			cout << receivedNContacts << ": ";
 			for(char c: receivedDirections){
 				cout << (int) c << " ";
 			} cout << "\n";
 		}
+		*/
 
 		// Evaporate pheromones
 		evaporate_pheromone();
@@ -175,12 +177,33 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 		// if(i%5 == 0) cout << "Cycle: " << i << "\n";
 	}
 
+	// Gather solutions in node 0
+	if(myRank == 0){
+		int recvBufSize = sizeof(int) + sizeof(int) + sizeof(char) * bestSol.directions().size();
+		vector<char> receivedDirections;
+		int receivedNContacts;
+
+		// Check which one is best
+		for(int i = 1; i < commSize; i++){
+			recv_solution(receivedDirections, receivedNContacts, recvBufSize, i);
+			if(receivedNContacts > bestContacts){
+				cout << "Solution from node " << i << " is better than ours.\n";
+			}
+		}
+	} else {
+		send_solution(bestSol.directions(), bestContacts, 0);
+	}
+
 	Results res = {
 		.solution = bestSol,
 		.contacts = bestContacts
 	};
 
 	MPI_Finalize();
+
+	if(myRank != 0){
+		exit(EXIT_SUCCESS);
+	}
 
 	return res;
 }
