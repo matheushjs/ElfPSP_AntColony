@@ -33,11 +33,16 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 
 		// Perform local search
 		for(unsigned j = 0; j < antsSolutions.size(); j++){
-			ACOSolution tentative = antsSolutions[j];
-			tentative.perturb_one(dRandGen);
-			int contacts = tentative.count_contacts(dHPChain);
-			if(contacts > nContacts[j]){
-				antsSolutions[j] = tentative;
+			for(unsigned int k = 0; k < 5; k++){
+				ACOSolution tentative = antsSolutions[j];
+				int lim = this->random() * tentative.directions().size();
+				for(int l = 0; l < lim; l++){
+					tentative.perturb_one(dRandGen);
+				}
+				int contacts = tentative.count_contacts(dHPChain);
+				if(contacts > nContacts[j]){
+					antsSolutions[j] = tentative;
+				}
 			}
 		}
 
@@ -66,8 +71,6 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 			cout << "\n";
 		}
 		*/
-
-		// if(i%5 == 0) cout << "Cycle: " << i << "\n";
 	}
 
 	Results res = {
