@@ -17,11 +17,16 @@ using std::unique_ptr;
 using std::pair;
 using std::make_pair;
 
+/** Encapsulates interprocess communication among MPI nodes.
+ * This class's best contribution is to hold buffers than can be reused throughout many communications.
+ * A strong assumption here is that the machines are homogeneous, so we can pass raw bytes between them.
+ */
 class InterProcess {
-	int dBufSize;
-	void *dSendBuffer;
-	void *dRecvBuffer;
+	int dBufSize; /**< Size, in bytes, of recv and send buffers. */
+	void *dSendBuffer; /**< Send buffer. */
+	void *dRecvBuffer; /**< Receive buffer. */
 
+	/** Serializes the given data within the internal send buffer. */
 	void serialize_solution(const vector<char> &directions, int nContacts){
 		int nDirections = directions.size();
 
@@ -36,6 +41,10 @@ class InterProcess {
 		memcpy(charBuffer, directions.data(), sizeof(char) * nDirections);
 	}
 
+	/** Deserializes data from the internal receive buffer.
+	 * \param nContacts Deserialized number of contacts is returned in this variable.
+	 * \return Deserialized vector of relative directions.
+	 */
 	vector<char> deserialize_solution(int &nContacts){
 		int *intPointer = (int *) dRecvBuffer;
 
@@ -57,17 +66,27 @@ class InterProcess {
 	}
 
 public:
+	/** Default constructor.
+	 * \param numDirections number of relative directions that each protein solution holds.
+	 *   This is used to calculate the internal buffer sizes.
+	 */
 	InterProcess(int numDirections)
 	  : dBufSize(2*sizeof(int) + numDirections*sizeof(char)),
 	    dSendBuffer((void*) new char[dBufSize]),
 		dRecvBuffer((void*) new char[dBufSize])
 	{}
 
+	/** Deletes internal buffers.  */
 	~InterProcess(){
 		delete[] (char*) dSendBuffer;
 		delete[] (char*) dRecvBuffer;
 	}
 
+	/** Sends a solution to another MPI node.
+	 * \param directions
+	 * \param contacts
+	 * \param destIdx Identifier for the MPI node that should receive the data.
+	 */
 	void send_solution(const vector<char> &directions, int contacts, int destIdx){
 		// Serialize solution into dSendBuffer
 		serialize_solution(directions, contacts);
@@ -76,6 +95,11 @@ public:
 		MPI_Send(dSendBuffer, dBufSize, MPI_CHAR, destIdx, 0, MPI_COMM_WORLD);
 	}
 
+	/** Received a solution from another MPI node.
+	 * \param directions
+	 * \param contacts
+	 * \param srcIdx Identifier for the MPI node from which we should receive the data.
+	 */
 	void recv_solution(vector<char> &directions, int &contacts, int srcIdx){
 		// Receive data into dRecvBuffer
 		MPI_Recv(dRecvBuffer, dBufSize, MPI_CHAR, srcIdx, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
