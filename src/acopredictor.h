@@ -44,9 +44,7 @@ class ACOPredictor {
 	std::vector<double> get_probabilities(int movIndex, std::vector<double> heuristics) const;
 	ACOSolution ant_develop_solution();
 	void ant_deposit_pheromone(const std::vector<char> &directions, int nContacts);
-	void develop_solutions(std::vector<ACOSolution> &antsSolutions, int *nContacts);
-	void store_best_protein(std::vector<ACOSolution> &antsSolutions, int *nContacts);
-	void evaporate_pheromone();
+	void perform_cycle(std::vector<ACOSolution> &antsSolutions, int *nContacts);
 
 public:
 	/** Constructor from configuration file.
@@ -69,7 +67,7 @@ public:
 };
 
 inline
-void ACOPredictor::develop_solutions(std::vector<ACOSolution> &antsSolutions, int *nContacts){
+void ACOPredictor::perform_cycle(std::vector<ACOSolution> &antsSolutions, int *nContacts){
 	// Let each ant develop a solution
 	for(int j = 0; j < dNAnts; j++){
 		ACOSolution currentSol = ant_develop_solution();
@@ -96,15 +94,19 @@ void ACOPredictor::develop_solutions(std::vector<ACOSolution> &antsSolutions, in
 			}
 		}
 	}
-}
 
-inline
-void ACOPredictor::store_best_protein(std::vector<ACOSolution> &antsSolutions, int *nContacts){
 	// Check best protein
 	for(unsigned j = 0; j < antsSolutions.size(); j++){
 		if(nContacts[j] > dBestContacts){
 			dBestSol = antsSolutions[j];
 			dBestContacts = nContacts[j];
+		}
+	}
+
+	// Evaporate pheromones
+	for(int i = 0; i < dNMovElems; i++){
+		for(int j = 0; j < 5; j++){
+			pheromone(i, j) *= (1 - dEvap);
 		}
 	}
 }
@@ -118,16 +120,6 @@ inline
 void ACOPredictor::ant_deposit_pheromone(const std::vector<char> &directions, int nContacts){
 	for(unsigned i = 0; i < directions.size(); i++){
 		pheromone(i, directions[i]) += nContacts / dHCount;
-	}
-}
-
-/** Each pheromone is multiplied by (1-p) where p is the persistence defined by the user. */
-inline
-void ACOPredictor::evaporate_pheromone(){
-	for(int i = 0; i < dNMovElems; i++){
-		for(int j = 0; j < 5; j++){
-			pheromone(i, j) *= (1 - dEvap);
-		}
 	}
 }
 
