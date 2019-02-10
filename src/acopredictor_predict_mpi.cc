@@ -120,9 +120,9 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 	// Since we are running multiple processes, we have to guarantee they use different random seeds
 	if(dRandSeed < 0){
 		std::random_device rd;
-		dRandGen.seed(rd() + myRank);
+		dRandGen[0].seed(rd() + myRank);
 	} else {
-		dRandGen.seed(dRandSeed + myRank);
+		dRandGen[0].seed(dRandSeed + myRank);
 	}
 
 	if(commSize == 1){

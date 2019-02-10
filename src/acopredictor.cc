@@ -23,17 +23,20 @@ ACOPredictor::ACOPredictor(const Config &config)
   dRandSeed(config.random_seed()),
   dNMovElems(dHPChain.length() - 2),
   dHCount(0),
+  dRandGen(10),
   dRandDist(0.0, 1.0),
   dBestContacts(-1)
 {
 	dPheromone = new double[dNMovElems*5];
 	std::fill(dPheromone, dPheromone + dNMovElems*5, 0.1);
 
-	if(dRandSeed < 0){
-		std::random_device rd;
-		dRandGen.seed(rd());
-	} else {
-		dRandGen.seed(dRandSeed);
+	for(unsigned i = 0; i < dRandGen.size(); i++){
+		if(dRandSeed < 0){
+			std::random_device rd;
+			dRandGen[i].seed(rd() + i);
+		} else {
+			dRandGen[i].seed(dRandSeed + i);
+		}
 	}
 
 	// Count number of H residues

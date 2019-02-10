@@ -29,14 +29,14 @@ class ACOPredictor {
 	int dNMovElems;
 	int dHCount; /**< Stores the number of hydrophobic (H) beads in the protein */
 	double *dPheromone; /**< Pheromone matrix. */
-	std::mt19937 dRandGen; /**< Random number generator used throughout the ACO algorithm. */
+	std::vector<std::mt19937> dRandGen; /**< Random number generators used throughout the ACO algorithm. */
 	std::uniform_real_distribution<> dRandDist; /**< Random distribution that uses `dRandGen` to generate random numbers. */
 
 	ACOSolution dBestSol; /**< Holds the best solution found by this colony. */
 	int dBestContacts; /**< Holds the num of contacts in the best solution. */
 
 	double &pheromone(int i, int d) const;
-	double random();
+	double random(int tid = 0);
 	std::vector<double> get_heuristics(
 			const std::vector<vec3<int>> &possiblePos,
 			const std::vector<vec3<int>> &beadVector
@@ -84,6 +84,6 @@ inline double &ACOPredictor::pheromone(int i, int d) const {
 }
 
 /** Returns a random number in [0,1). */
-inline double ACOPredictor::random() {
-	return dRandDist(dRandGen);
+inline double ACOPredictor::random(int tid) {
+	return dRandDist(dRandGen[tid]);
 }

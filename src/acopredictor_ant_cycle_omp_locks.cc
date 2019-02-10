@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <omp.h>
 
 #include "acopredictor.h"
 
@@ -12,6 +13,8 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 	// Let each ant develop a solution
 	#pragma omp parallel
 	{
+		int tid = omp_get_thread_num();
+
 		#pragma omp for
 		for(int j = 0; j < dNAnts; j++){
 			ACOSolution currentSol = ant_develop_solution();
@@ -23,18 +26,18 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 		}
 
 		// Calculate contacts
-		#pragma omp for nowait
+		#pragma omp for
 		for(unsigned j = 0; j < antsSolutions.size(); j++)
 			nContacts[j] = antsSolutions[j].count_contacts(dHPChain);
 
 		// Perform local search
-		#pragma omp for nowait
+		#pragma omp for
 		for(unsigned j = 0; j < antsSolutions.size(); j++){
 			for(int k = 0; k < dLSFreq; k++){
 				ACOSolution tentative = antsSolutions[j];
 				int lim = this->random() * tentative.directions().size();
 				for(int l = 0; l < lim; l++){
-					tentative.perturb_one(dRandGen);
+					tentative.perturb_one(dRandGen[tid]);
 				}
 				int contacts = tentative.count_contacts(dHPChain);
 				if(contacts > nContacts[j]){

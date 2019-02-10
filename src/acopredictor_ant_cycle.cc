@@ -27,7 +27,7 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 			ACOSolution tentative = antsSolutions[j];
 			int lim = this->random() * tentative.directions().size();
 			for(int l = 0; l < lim; l++){
-				tentative.perturb_one(dRandGen);
+				tentative.perturb_one(dRandGen[0]);
 			}
 			int contacts = tentative.count_contacts(dHPChain);
 			if(contacts > nContacts[j]){
