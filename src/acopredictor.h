@@ -32,6 +32,9 @@ class ACOPredictor {
 	std::mt19937 dRandGen; /**< Random number generator used throughout the ACO algorithm. */
 	std::uniform_real_distribution<> dRandDist; /**< Random distribution that uses `dRandGen` to generate random numbers. */
 
+	ACOSolution dBestSol; /**< Holds the best solution found by this colony. */
+	int dBestContacts; /**< Holds the num of contacts in the best solution. */
+
 	double &pheromone(int i, int d) const;
 	double random();
 	std::vector<double> get_heuristics(
@@ -41,6 +44,8 @@ class ACOPredictor {
 	std::vector<double> get_probabilities(int movIndex, std::vector<double> heuristics) const;
 	ACOSolution ant_develop_solution();
 	void ant_deposit_pheromone(const std::vector<char> &directions, int nContacts);
+	void develop_solutions(std::vector<ACOSolution> &antsSolutions, int *nContacts);
+	void store_best_protein(std::vector<ACOSolution> &antsSolutions, int *nContacts);
 	void evaporate_pheromone();
 
 public:
@@ -62,6 +67,47 @@ public:
 	 * \return the best solution found by the optimization algorithm. */
 	struct Results predict();
 };
+
+inline
+void ACOPredictor::develop_solutions(std::vector<ACOSolution> &antsSolutions, int *nContacts){
+	// Let each ant develop a solution
+	for(int j = 0; j < dNAnts; j++){
+		ACOSolution currentSol = ant_develop_solution();
+		if(currentSol.has_error() == false){
+			antsSolutions.push_back(currentSol);
+		}
+	}
+
+	// Calculate contacts
+	for(unsigned j = 0; j < antsSolutions.size(); j++)
+		nContacts[j] = antsSolutions[j].count_contacts(dHPChain);
+
+	// Perform local search
+	for(unsigned j = 0; j < antsSolutions.size(); j++){
+		for(int k = 0; k < dLSFreq; k++){
+			ACOSolution tentative = antsSolutions[j];
+			int lim = this->random() * tentative.directions().size();
+			for(int l = 0; l < lim; l++){
+				tentative.perturb_one(dRandGen);
+			}
+			int contacts = tentative.count_contacts(dHPChain);
+			if(contacts > nContacts[j]){
+				antsSolutions[j] = tentative;
+			}
+		}
+	}
+}
+
+inline
+void ACOPredictor::store_best_protein(std::vector<ACOSolution> &antsSolutions, int *nContacts){
+	// Check best protein
+	for(unsigned j = 0; j < antsSolutions.size(); j++){
+		if(nContacts[j] > dBestContacts){
+			dBestSol = antsSolutions[j];
+			dBestContacts = nContacts[j];
+		}
+	}
+}
 
 /** Deposits pheromones along the trail followed by the given ant.
  *

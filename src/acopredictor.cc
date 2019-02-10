@@ -23,7 +23,8 @@ ACOPredictor::ACOPredictor(const Config &config)
   dRandSeed(config.random_seed()),
   dNMovElems(dHPChain.length() - 2),
   dHCount(0),
-  dRandDist(0.0, 1.0)
+  dRandDist(0.0, 1.0),
+  dBestContacts(-1)
 {
 	dPheromone = new double[dNMovElems*5];
 	std::fill(dPheromone, dPheromone + dNMovElems*5, 0.1);
