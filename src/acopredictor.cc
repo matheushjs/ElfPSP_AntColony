@@ -120,6 +120,15 @@ vector<double> ACOPredictor::get_probabilities(int movIndex, vector<double> heur
 	if(sum == 0)
 		return {0.2, 0.2, 0.2, 0.2, 0.2};
 
+	// sum should not be inf or nan. The user must control this.
+	if(std::isinf(sum) || std::isnan(sum)){
+		cerr << "ERROR: Encountered unexpected 'Not a Number' or 'Inf'.\n";
+		cerr << "Please control the ACO_ALPHA and ACO_BETA parameters more suitably.\n";
+		cerr << "Keep in mind that the base for ACO_BETA may be higher than 0, "
+		        "and the base for ACO_ALPHA may be very near 0.\n";
+		exit(EXIT_FAILURE);
+	}
+
 	for(int d = 0; d < 5; d++){
 		retval[d] /= sum;
 	}
