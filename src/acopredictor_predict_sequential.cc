@@ -54,12 +54,12 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 			}
 		}
 
+		// Evaporate pheromones
+		evaporate_pheromone();
+
 		// Deposit pheromones
 		for(unsigned j = 0; j < antsSolutions.size(); j++)
 			ant_deposit_pheromone(antsSolutions[j].directions(), nContacts[j]);
-
-		// Evaporate pheromones
-		evaporate_pheromone();
 
 		/*
 		if(i%2 == 0){
