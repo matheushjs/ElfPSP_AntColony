@@ -143,10 +143,6 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 
 		perform_cycle(antsSolutions, nContacts.get());
 
-		// Deposit pheromones
-		for(unsigned j = 0; j < antsSolutions.size(); j++)
-			ant_deposit_pheromone(antsSolutions[j].directions(), nContacts[j]);
-
 		// We will need to select the best proteins of current cycle, so we place them all in a priority queue
 		auto cmp = [](pair<int,ACOSolution&> a, pair<int,ACOSolution&> b){ return a.first < b.first; };
 		priority_queue<pair<int,ACOSolution&>, vector<pair<int,ACOSolution&>>, decltype(cmp)> que(cmp);

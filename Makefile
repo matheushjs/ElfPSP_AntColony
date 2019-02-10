@@ -14,19 +14,19 @@ VPATH=src/
 all:
 	make prog_bt prog_nbt prog_bt_mpi prog_nbt_mpi test
 
-prog_bt_mpi: main.o hpchain.o config.o acopredictor.o acopredictor_predict_mpi.o acopredictor_backtracking.o
+prog_bt_mpi: main.o hpchain.o config.o acopredictor.o acopredictor_predict_mpi.o acopredictor_backtracking.o acopredictor_ant_cycle.o
 	g++ $(CFLAGS) $(MPI_CFLAGS) $^ -o $@ $(MPI_LIBS)
 
-prog_nbt_mpi: main.o hpchain.o config.o acopredictor.o acopredictor_predict_mpi.o acopredictor_nobacktracking.o
+prog_nbt_mpi: main.o hpchain.o config.o acopredictor.o acopredictor_predict_mpi.o acopredictor_nobacktracking.o acopredictor_ant_cycle.o
 	g++ $(CFLAGS) $(MPI_CFLAGS) $^ -o $@ $(MPI_LIBS)
 
-prog_bt: main.o hpchain.o config.o acopredictor.o acopredictor_predict_sequential.o acopredictor_backtracking.o
+prog_bt: main.o hpchain.o config.o acopredictor.o acopredictor_predict_sequential.o acopredictor_backtracking.o acopredictor_ant_cycle.o
 	g++ $(CFLAGS) $^ -o $@
 
-prog_nbt: main.o hpchain.o config.o acopredictor.o acopredictor_predict_sequential.o acopredictor_nobacktracking.o
+prog_nbt: main.o hpchain.o config.o acopredictor.o acopredictor_predict_sequential.o acopredictor_nobacktracking.o acopredictor_ant_cycle.o
 	g++ $(CFLAGS) $^ -o $@
 
-test: test.o hpchain.o config.o acopredictor.o acopredictor_predict_sequential.o acopredictor_nobacktracking.o
+test: test.o hpchain.o config.o acopredictor.o acopredictor_predict_sequential.o acopredictor_nobacktracking.o acopredictor_ant_cycle.o
 	g++ $(CFLAGS) $^ -o $@
 
 clean:
@@ -44,6 +44,7 @@ acopredictor.o: acopredictor.cc $(HARD_DEPS)
 acopredictor_predict_sequential.o: acopredictor_predict_sequential.cc $(HARD_DEPS)
 acopredictor_backtracking.o: acopredictor_backtracking.cc $(HARD_DEPS)
 acopredictor_nobacktracking.o: acopredictor_nobacktracking.cc $(HARD_DEPS)
+acopredictor_ant_cycle.o: acopredictor_ant_cycle.cc $(HARD_DEPS)
 
 acopredictor_predict_mpi.o: acopredictor_predict_mpi.cc $(HARD_DEPS)
 	g++ -c $(CFLAGS) $(MPI_CFLAGS) $< -o $@ $(MPI_LIBS)

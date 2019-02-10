@@ -18,10 +18,6 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 
 		perform_cycle(antsSolutions, nContacts.get());
 
-		// Deposit pheromones
-		for(unsigned j = 0; j < antsSolutions.size(); j++)
-			ant_deposit_pheromone(antsSolutions[j].directions(), nContacts[j]);
-
 		/*
 		if(i%2 == 0){
 			for(int j = 0; j < 5; j++){
