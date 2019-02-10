@@ -133,7 +133,7 @@ struct ACOPredictor::Results ACOPredictor::predict(){
 
 		// Perform local search
 		for(unsigned j = 0; j < antsSolutions.size(); j++){
-			for(unsigned int k = 0; k < 5; k++){
+			for(int k = 0; k < dLSFreq; k++){
 				ACOSolution tentative = antsSolutions[j];
 				int lim = this->random() * tentative.directions().size();
 				for(int l = 0; l < lim; l++){
