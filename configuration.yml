@@ -2,14 +2,14 @@ HP_CHAIN: PPPPPPPPHHHHHHHHHHHHHHHHPPPPPPPPPPPPPHHHHHHHHHHHHHPPPPPPPP
 
 CYCLES: 1000
 N_ANTS: 10
-ACO_ALPHA: 1E2
-ACO_BETA: 1E5
+ACO_ALPHA: 3
+ACO_BETA: 1
 ACO_EVAPORATION: 0.95
 LS_FREQUENCY: 5
 
 EXCHANGED_ANTS: 1
 
-RANDOM_SEED: 72
+RANDOM_SEED: -1
 
 STRUCTURE_FILENAME: output.json
 
@@ -19,8 +19,10 @@ STRUCTURE_FILENAME: output.json
 #
 # CYCLES           Number of cycles of the optimization algorithms.
 # N_ANTS           Number of ants in the ant colony
-# ACO_ALPHA        Parameter 'alpha' of the ACO algorithm, which represents the weight of the pheromones in each ant's decision
-# ACO_BETA         Parameter 'beta' of the ACO algorithm, which represents the weight of the heuristic values on ant's decision
+# ACO_ALPHA        Parameter 'alpha' of the ACO algorithm, which represents the weight of the pheromones in each ant's decision.
+#                    The base for ACO_ALPHA can be a number near 0, so avoid too high values for ACO_ALPHA.
+# ACO_BETA         Parameter 'beta' of the ACO algorithm, which represents the weight of the heuristic values on ant's decision.
+#                    The base for ACO_BETA can be numbers higher than 0, so avoid too high values for ACO_BETA.
 # ACO_EVAPORATION  Evaporation rate of the pheromones in the pheromone matrix.
 #                    At each iteration, pheromones are multiplied by (1-p), where p is this parameter.
 # LS_FREQUENCY     Local Search frequency. This determines the number of times to perform local search on each
