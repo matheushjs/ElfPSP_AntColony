@@ -24,6 +24,7 @@ Config::Config(){
 		" ACO_ALPHA: %lf "
 		" ACO_BETA: %lf "
 		" ACO_EVAPORATION: %lf "
+		" LS_FREQUENCY: %d "
 		" EXCHANGED_ANTS: %d"
 		" RANDOM_SEED: %d "
 		" STRUCTURE_FILENAME: %ms ",
@@ -34,6 +35,7 @@ Config::Config(){
 		&dAcoAlpha,
 		&dAcoBeta,
 		&dAcoEvaporation,
+		&dLSFrequency,
 		&dExchangedAnts,
 		&dRandSeed,
 		&filename
@@ -46,7 +48,7 @@ Config::Config(){
 
 	fclose(fp);
 
-	if(counter != 9){
+	if(counter != 10){
 		std::cerr << "Could not parse configuration file correctly.\n";
 		std::exit(1);
 	}

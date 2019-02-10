@@ -1,12 +1,13 @@
-HP_CHAIN: PPPPPPPPHHHHHHHHHHHHHHHHPPPPPPPPPPPPPHHHHHHHHHHHHH
+HP_CHAIN: PPPPPPPPHHHHHHHHHHHHHHHHPPPPPPPPPPPPPHHHHHHHHHHHHHPPPPPPPP
 
 CYCLES: 1000
-N_ANTS: 100
-ACO_ALPHA: 1E0
+N_ANTS: 10
+ACO_ALPHA: 1E2
 ACO_BETA: 1E0
-ACO_EVAPORATION: 0.1
+ACO_EVAPORATION: 0.95
+LS_FREQUENCY: 5
 
-EXCHANGED_ANTS: 3
+EXCHANGED_ANTS: 1
 
 RANDOM_SEED: 72
 
@@ -22,6 +23,9 @@ STRUCTURE_FILENAME: output.json
 # ACO_BETA         Parameter 'beta' of the ACO algorithm, which represents the weight of the heuristic values on ant's decision
 # ACO_EVAPORATION  Evaporation rate of the pheromones in the pheromone matrix.
 #                    At each iteration, pheromones are multiplied by (1-p), where p is this parameter.
+# LS_FREQUENCY     Local Search frequency. This determines the number of times to perform local search on each
+#                    protein developed by an ant. A local search consists of randomizing one relative direction
+#                    within the protein, and checking if the resulting protein is better.
 #
 # EXCHANGED_ANTS     If running the MPI multiple colony version, how many ants should be exchanged
 #                      between nodes at every colony cycle?

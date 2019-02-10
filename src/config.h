@@ -19,6 +19,7 @@ class Config {
 	double      dAcoAlpha;
 	double      dAcoBeta;
 	double      dAcoEvaporation;
+	int         dLSFrequency;
 	int         dExchangedAnts;
 	int         dRandSeed;
 	std::string dFilename;
@@ -47,8 +48,11 @@ public:
 	/** Evaporation rate of pheromones. */
 	double aco_evaporation() const { return dAcoEvaporation; }
 
+	/** Local search frequency. */
+	int    ls_frequency() const { return dLSFrequency; }
+
 	/** Number of ants that MPI nodes should exchange at every cycle. */
-	int exchanged_ants() const { return dExchangedAnts; }
+	int    exchanged_ants() const { return dExchangedAnts; }
 
 	/** Random seed defined by the user.
 	 *
