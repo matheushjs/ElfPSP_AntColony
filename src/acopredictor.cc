@@ -19,7 +19,7 @@ ACOPredictor::ACOPredictor(const Config &config)
   dBeta(config.aco_beta()),
   dEvap(config.aco_evaporation()),
   dLSFreq(config.ls_frequency()),
-  dExchangedAnts(config.random_seed()),
+  dExchangedAnts(config.exchanged_ants()),
   dRandSeed(config.random_seed()),
   dNMovElems(dHPChain.length() - 2),
   dHCount(0),
