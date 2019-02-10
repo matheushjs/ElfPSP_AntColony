@@ -11,30 +11,28 @@ using std::vector;
 using std::string;
 using std::unique_ptr;
 
-ACOPredictor::ACOPredictor(
-	const HPChain &hpchain, int cycles, int nAnts,
-	double alpha, double beta, double evap, int randSeed,
-	int exchangedAnts)
-: dHPChain(hpchain),
-  dCycles(cycles),
-  dNAnts(nAnts),
-  dAlpha(alpha),
-  dBeta(beta),
-  dEvap(evap),
-  dNMovElems(hpchain.length() - 2),
+ACOPredictor::ACOPredictor(const Config &config)
+: dHPChain(config.hp_chain()),
+  dCycles(config.cycles()),
+  dNAnts(config.n_ants()),
+  dAlpha(config.aco_alpha()),
+  dBeta(config.aco_beta()),
+  dEvap(config.aco_evaporation()),
+  dLSFreq(config.ls_frequency()),
+  dExchangedAnts(config.random_seed()),
+  dRandSeed(config.random_seed()),
+  dNMovElems(dHPChain.length() - 2),
   dHCount(0),
-  dRandSeed(randSeed),
-  dRandDist(0.0, 1.0),
-  dExchangedAnts(exchangedAnts)
+  dRandDist(0.0, 1.0)
 {
 	dPheromone = new double[dNMovElems*5];
 	std::fill(dPheromone, dPheromone + dNMovElems*5, 0.1);
 
-	if(randSeed < 0){
+	if(dRandSeed < 0){
 		std::random_device rd;
 		dRandGen.seed(rd());
 	} else {
-		dRandGen.seed(randSeed);
+		dRandGen.seed(dRandSeed);
 	}
 
 	// Count number of H residues

@@ -61,6 +61,12 @@ public:
 
 	/** Output filename for structural information of the protein. */
 	const std::string &filename() const { return dFilename; }
+
+	void set_hp_chain(std::string chain) { dHPChain = chain; }
+
+	void set_cycles(int cycles) { dCycles = cycles; }
+
+	void set_nants(int nants) { dNAnts = nants; }
 };
 
 #endif

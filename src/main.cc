@@ -60,24 +60,28 @@ int main(int argc, char *argv[]){
 		}
 	}
 
+	// Read configurations from configuration file
 	Config conf;
-	HPChain hpchain(argHPChain == "" ? conf.hp_chain() : argHPChain);
+
+	// Change configurations if command-line arguments were given
+	if(argHPChain != "")
+		conf.set_hp_chain(argHPChain);
+	
+	if(argNumCycles != -1)
+		conf.set_cycles(argNumCycles);
+
+	if(argNumAnts != -1)
+		conf.set_nants(argNumAnts);
+
+	// Validate hp chain
+	HPChain hpchain(conf.hp_chain());
 
 	if(!hpchain.validate()){
 		cerr << "Invallid HP Chain. Received: " << hpchain.get_chain() << "\n";
 		std::exit(2);
 	}
 
-	ACOPredictor predictor(
-		hpchain.get_chain(),
-		argNumCycles == -1 ? conf.cycles()   : argNumCycles,
-		argNumAnts   == -1 ? conf.n_ants()   : argNumAnts,
-		conf.aco_alpha(),
-		conf.aco_beta(),
-		conf.aco_evaporation(),
-		conf.random_seed(),
-		conf.exchanged_ants()
-	);
+	ACOPredictor predictor(conf);
 
 	struct ACOPredictor::Results result = predictor.predict();
 

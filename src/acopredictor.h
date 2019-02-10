@@ -7,28 +7,30 @@
 
 #include "hpchain.h"
 #include "acosolution.h"
+#include "config.h"
 
 /** Encapsulates the whole process of performing Ant Colony Optimization to find
  *    a protein conformation with low free energy. */
 class ACOPredictor {
 	/** @{ */
-	/** See constructor ACOPredictor(). */
+	/** See the user configuration file for documentation. */
 	HPChain dHPChain;
 	int dCycles;
 	int dNAnts;
 	double dAlpha;
 	double dBeta;
 	double dEvap;
+	int dLSFreq;
+	int dExchangedAnts;
+	int dRandSeed;
 	/** @} */
 
 	/** Stores the number of moviments performed by an ant; its value is N-2 where N is the number of beads in the protein. */
 	int dNMovElems;
 	int dHCount; /**< Stores the number of hydrophobic (H) beads in the protein */
 	double *dPheromone; /**< Pheromone matrix. */
-	int dRandSeed; /**< Random seed. -1 if seed is to be chosen randomly. */
 	std::mt19937 dRandGen; /**< Random number generator used throughout the ACO algorithm. */
 	std::uniform_real_distribution<> dRandDist; /**< Random distribution that uses `dRandGen` to generate random numbers. */
-	int dExchangedAnts; /**< Number of ants that each MPI node should exchange. */
 
 	double &pheromone(int i, int d) const;
 	double random();
@@ -42,18 +44,10 @@ class ACOPredictor {
 	void evaporate_pheromone();
 
 public:
-	/** Default constructor.
-	 * \param chain HP chain of the protein whose structure is to be predicted.
-	 * \param cycles Number of cycles that should be performed by the ant colony.
-	 * \param nAnts Number of ants in the colony. All ants work in each cycle of the colony.
-	 * \param alpha Parameter alpha of the pheremone probability equation.
-	 * \param beta Parameter beta of the pheremone probability equation.
-	 * \param evap Evaporation rate of pheromones. Each pheromone is multiplied by (1-evap) at each iteration.
-	 * \param randSeed random seed to pass to the random number generator. If negative, a random seed is chosen.
+	/** Constructor from configuration file.
+	 * \param config The configuration file object from which we can read user configured-parameters.
 	 */
-	ACOPredictor(const HPChain &chain, int cycles, int nAnts,
-	             double alpha, double beta, double evap, int randSeed = -1,
-	             int exchangedAnts = -1);
+	ACOPredictor(const Config &config);
 
 	/** The destructor frees memory allocated for holding internal data structures. */
 	~ACOPredictor();
