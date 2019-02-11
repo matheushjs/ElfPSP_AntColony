@@ -15,9 +15,9 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 	{
 		int tid = omp_get_thread_num();
 
-		#pragma omp for
+		#pragma omp for schedule(static)
 		for(int j = 0; j < dNAnts; j++){
-			ACOSolution currentSol = ant_develop_solution();
+			ACOSolution currentSol = ant_develop_solution(tid);
 
 			if(currentSol.has_error() == false){
 				#pragma omp critical
@@ -26,16 +26,16 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 		}
 
 		// Calculate contacts
-		#pragma omp for
+		#pragma omp for schedule(static)
 		for(unsigned j = 0; j < antsSolutions.size(); j++)
 			nContacts[j] = antsSolutions[j].count_contacts(dHPChain);
 
 		// Perform local search
-		#pragma omp for
+		#pragma omp for schedule(static)
 		for(unsigned j = 0; j < antsSolutions.size(); j++){
 			for(int k = 0; k < dLSFreq; k++){
 				ACOSolution tentative = antsSolutions[j];
-				int lim = this->random() * tentative.directions().size();
+				int lim = this->random(tid) * tentative.directions().size();
 				for(int l = 0; l < lim; l++){
 					tentative.perturb_one(dRandGen[tid]);
 				}
@@ -50,7 +50,7 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 		int localBestContacts = -1;
 		
 		// Calculate best solution in each thread
-		#pragma omp for nowait
+		#pragma omp for nowait schedule(static)
 		for(unsigned j = 0; j < antsSolutions.size(); j++){
 			if(nContacts[j] > localBestContacts){
 				localBestSol = antsSolutions[j];
@@ -66,7 +66,7 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 		}
 
 		// Evaporate pheromones
-		#pragma omp for nowait
+		#pragma omp for schedule(static)
 		for(int i = 0; i < dNMovElems; i++){
 			for(int j = 0; j < 5; j++){
 				pheromone(i, j) *= (1 - dEvap);
@@ -74,6 +74,7 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 		}
 
 		// Deposit pheromones
+		#pragma omp for schedule(static)
 		for(unsigned j = 0; j < antsSolutions.size(); j++){
 			const vector<char> &directions = antsSolutions[j].directions();
 			for(unsigned i = 0; i < directions.size(); i++){

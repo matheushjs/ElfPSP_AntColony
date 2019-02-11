@@ -13,7 +13,7 @@ using std::stack;
 
 /** Makes an ant develop a solution, beginning from the start.
  * Returns the developed solution. */
-ACOSolution ACOPredictor::ant_develop_solution() {
+ACOSolution ACOPredictor::ant_develop_solution(int tid) {
 	ACOSolution sol;
 
 	struct State {
@@ -78,7 +78,7 @@ ACOSolution ACOPredictor::ant_develop_solution() {
 
 		/* Decide next direction. */
 		char dir = -1;
-		double rand = this->random();
+		double rand = this->random(tid);
 		for(unsigned i = 0; i < 5; i++){
 			if(rand <= accumulated[i]){
 				dir = i;

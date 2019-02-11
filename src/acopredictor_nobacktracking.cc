@@ -11,7 +11,7 @@ using std::string;
 
 /** Makes an ant develop a solution, beginning from the start.
  * Returns the developed solution. */
-ACOSolution ACOPredictor::ant_develop_solution() {
+ACOSolution ACOPredictor::ant_develop_solution(int tid) {
 	ACOSolution sol;
 
 	for(int i = 0; i < dNMovElems; i++){
@@ -56,7 +56,7 @@ ACOSolution ACOPredictor::ant_develop_solution() {
 
 		// Decide direction
 		char direction = 0;
-		double randomNum = this->random();
+		double randomNum = this->random(tid);
 		for(unsigned i = 0; i < probs.size(); i++){
 			if(randomNum < probs[i]){
 				direction = i;

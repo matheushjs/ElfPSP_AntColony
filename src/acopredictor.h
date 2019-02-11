@@ -42,7 +42,7 @@ class ACOPredictor {
 			const std::vector<vec3<int>> &beadVector
 		);
 	std::vector<double> get_probabilities(int movIndex, std::vector<double> heuristics) const;
-	ACOSolution ant_develop_solution();
+	ACOSolution ant_develop_solution(int tid = 0);
 	void ant_deposit_pheromone(const std::vector<char> &directions, int nContacts);
 	void perform_cycle(std::vector<ACOSolution> &antsSolutions, int *nContacts);
 
@@ -85,5 +85,6 @@ inline double &ACOPredictor::pheromone(int i, int d) const {
 
 /** Returns a random number in [0,1). */
 inline double ACOPredictor::random(int tid) {
-	return dRandDist(dRandGen[tid]);
+	double retval = dRandDist(dRandGen[tid]);
+	return retval;
 }
