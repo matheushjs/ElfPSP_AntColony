@@ -15,7 +15,7 @@ COMMON_DEPS=hpchain.o config.o acopredictor.o
 VPATH=src/
 
 all:
-	make prog_bt prog_nbt prog_bt_mpi prog_nbt_mpi prog_bt_omp_lock test
+	make prog_bt prog_nbt prog_bt_mpi prog_nbt_mpi prog_bt_omp test
 
 prog_bt_mpi: main.o $(COMMON_DEPS)  acopredictor_predict.mpi.o acopredictor_backtracking.o acopredictor_ant_cycle.o
 	g++ $(CFLAGS) $(MPI_CFLAGS) $^ -o $@ $(MPI_LIBS)
@@ -26,7 +26,7 @@ prog_nbt_mpi: main.o $(COMMON_DEPS) acopredictor_predict.mpi.o acopredictor_noba
 prog_bt: main.o $(COMMON_DEPS) acopredictor_predict_sequential.o acopredictor_backtracking.o acopredictor_ant_cycle.o
 	g++ $(CFLAGS) $^ -o $@
 
-prog_bt_omp_lock: main.o $(COMMON_DEPS) acopredictor_predict_sequential.o acopredictor_backtracking.o acopredictor_ant_cycle_omp_locks.omp.o
+prog_bt_omp: main.o $(COMMON_DEPS) acopredictor_predict_sequential.o acopredictor_backtracking.o acopredictor_ant_cycle_omp.omp.o
 	g++ -fopenmp $(CFLAGS) $^ -o $@
 
 prog_nbt: main.o $(COMMON_DEPS) acopredictor_predict_sequential.o acopredictor_nobacktracking.o acopredictor_ant_cycle.o
@@ -52,7 +52,7 @@ acopredictor_predict.mpi.o: acopredictor_predict_mpi.cc $(HARD_DEPS)
 acopredictor_backtracking.o: acopredictor_backtracking.cc $(HARD_DEPS)
 acopredictor_nobacktracking.o: acopredictor_nobacktracking.cc $(HARD_DEPS)
 acopredictor_ant_cycle.o: acopredictor_ant_cycle.cc $(HARD_DEPS)
-acopredictor_ant_cycle_omp_locks.omp.o: acopredictor_ant_cycle_omp_locks.cc $(HARD_DEPS)
+acopredictor_ant_cycle_omp.omp.o: acopredictor_ant_cycle_omp.cc $(HARD_DEPS)
 
 # Implicit rule for building objects
 %.o:
