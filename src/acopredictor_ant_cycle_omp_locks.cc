@@ -64,16 +64,22 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 			dBestSol = localBestSol;
 			dBestContacts = localBestContacts;
 		}
-	} // #pragma omp parallel
 
-	// Evaporate pheromones
-	for(int i = 0; i < dNMovElems; i++){
-		for(int j = 0; j < 5; j++){
-			pheromone(i, j) *= (1 - dEvap);
+		// Evaporate pheromones
+		#pragma omp for nowait
+		for(int i = 0; i < dNMovElems; i++){
+			for(int j = 0; j < 5; j++){
+				pheromone(i, j) *= (1 - dEvap);
+			}
 		}
-	}
 
-	// Deposit pheromones
-	for(unsigned j = 0; j < antsSolutions.size(); j++)
-		ant_deposit_pheromone(antsSolutions[j].directions(), nContacts[j]);
+		// Deposit pheromones
+		for(unsigned j = 0; j < antsSolutions.size(); j++){
+			const vector<char> &directions = antsSolutions[j].directions();
+			for(unsigned i = 0; i < directions.size(); i++){
+				#pragma omp atomic
+				pheromone(i, directions[i]) += nContacts[j] / dHCount;
+			}
+		}
+	} // #pragma omp parallel
 }
