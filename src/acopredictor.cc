@@ -30,9 +30,9 @@ ACOPredictor::ACOPredictor(const Config &config)
 	dPheromone = new double[dNMovElems*5];
 	std::fill(dPheromone, dPheromone + dNMovElems*5, 0.1);
 
+	std::random_device rd;
 	for(unsigned i = 0; i < dRandGen.size(); i++){
 		if(dRandSeed < 0){
-			std::random_device rd;
 			dRandGen[i].seed(rd() + i);
 		} else {
 			dRandGen[i].seed(dRandSeed + i);

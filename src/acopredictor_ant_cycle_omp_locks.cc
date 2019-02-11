@@ -45,15 +45,26 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 				}
 			}
 		}
-	}
 
-	// Check best protein
-	for(unsigned j = 0; j < antsSolutions.size(); j++){
-		if(nContacts[j] > dBestContacts){
-			dBestSol = antsSolutions[j];
-			dBestContacts = nContacts[j];
+		ACOSolution localBestSol;
+		int localBestContacts = -1;
+		
+		// Calculate best solution in each thread
+		#pragma omp for nowait
+		for(unsigned j = 0; j < antsSolutions.size(); j++){
+			if(nContacts[j] > localBestContacts){
+				localBestSol = antsSolutions[j];
+				localBestContacts = nContacts[j];
+			}
 		}
-	}
+
+		// Agglomerate global result
+		#pragma omp critical
+		if(localBestContacts > dBestContacts){
+			dBestSol = localBestSol;
+			dBestContacts = localBestContacts;
+		}
+	} // #pragma omp parallel
 
 	// Evaporate pheromones
 	for(int i = 0; i < dNMovElems; i++){
@@ -61,7 +72,7 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 			pheromone(i, j) *= (1 - dEvap);
 		}
 	}
-	
+
 	// Deposit pheromones
 	for(unsigned j = 0; j < antsSolutions.size(); j++)
 		ant_deposit_pheromone(antsSolutions[j].directions(), nContacts[j]);
