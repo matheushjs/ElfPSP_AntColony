@@ -111,11 +111,9 @@ void perform_cycle_device(
 	int3 *possiblePositions
 ){
 	int tid = blockIdx.x * blockDim.x + threadIdx.x;
-	int randNumber = threadIdx.x + 1;
+	int randNumber = (13235632^(threadIdx.x*threadIdx.x+77))>>(threadIdx.x%13); // TODO: Improve RNG
 
 	for(int i = 0; i < nMovElems; i++){
-		printf("Progress now: %d\n", progress[tid]);
-
 		int3 prevDir = previous_direction(tid, solutions, nCoords, progress);
 		int3 prevBead = solution_back(tid, solutions, nCoords, progress);
 
@@ -152,7 +150,7 @@ void perform_cycle_device(
 		}
 		
 		// TODO: get probabilities
-		double probs[5] = {1, 1, 1, 1, 1};
+		double probs[5] = {0.2, 0.2, 0.2, 0.2, 0.2};
 
 		// Accumulate the probability vector
 		for(int i = 1; i < 5; i++)
@@ -187,6 +185,20 @@ void perform_cycle_device(
 		myDirections[progress[tid]] = direction;
 		progress[tid]++;
 	}
+
+	/* DEBUG PROTEINS PRODUCED
+	for(int i = 0; i < gridDim.x * blockDim.x; i++){
+		if(tid == i){
+			int3 *mySolution = get_solution(solutions, tid, nCoords);
+			for(int j = 0; j < nMovElems+2; j++){
+				print(mySolution[j]);
+				printf(" ");
+			}
+			printf("\n");
+		}
+		__syncthreads();
+	}
+	*/
 
 	/* DEBUG PROGRESS
 	for(int i = 0; i < 10; i++)
@@ -242,7 +254,7 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 	cudaMemsetAsync(d_progress, 0, sizeof(int)*dNAnts);
 
 	// Call device function
-	perform_cycle_device<<<1,1>>>(d_pheromone, dNMovElems, d_solutions,
+	perform_cycle_device<<<1,dNAnts>>>(d_pheromone, dNMovElems, d_solutions,
 			nCoords, d_relDirections, d_progress, d_possiblePositions);
 
 	// Free stuff
