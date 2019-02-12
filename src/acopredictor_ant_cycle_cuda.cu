@@ -119,7 +119,12 @@ int calculate_contacts(int3 *solution, int nCoords, char *hpChain){
 	for(int i = 0; i < nCoords; i++){
 		if(hpChain[i] == 'P') continue;
 		for(int j = i+1; j < nCoords; j++){
-			if(hpChain[j] == 'H' && norm1(solution[i] - solution[j]) == 1){
+			int norm = norm1(solution[i] - solution[j]);
+			if(norm == 0){
+				// Invalidate solution
+				solution[0].x = -1;
+				return -1;
+			} else if(hpChain[j] == 'H' && norm == 1){
 				nContacts++;
 			}
 		}
@@ -129,7 +134,8 @@ int calculate_contacts(int3 *solution, int nCoords, char *hpChain){
 
 __device__
 void develop_solution(int3 *solution, int nCoords, char *myDirections, int nMovElems){
-	int randNumber = (13235632^(threadIdx.x*threadIdx.x+77))>>(threadIdx.x%13); // TODO: Improve RNG
+	// TODO: Improve RNG!!! This won't even work across kernel calls.
+	int randNumber = (13235632^(threadIdx.x*threadIdx.x+77))>>(threadIdx.x%13);
 	int progress = 0;
 	
 	for(int i = 0; i < nMovElems; i++){
@@ -219,6 +225,7 @@ void ant_develop_solution_device(
 	develop_solution(mySolution, nCoords, myDirections, nMovElems);
 
 	// Now we calculate contacts
+	// If collisions are found, the solution is invalidated (and contacts = -1).
 	int nContacts = calculate_contacts(mySolution, nCoords, hpChain);
 
 	// Then we perform local search
