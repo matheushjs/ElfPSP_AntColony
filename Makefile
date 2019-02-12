@@ -7,7 +7,7 @@ MPI_CFLAGS=-I/usr/include/mpich
 
 # We take as a rule that if any API changes, everything should be rebuilt.
 # Same goes for the makefile itself
-HARD_DEPS=Makefile hpchain.h config.h vec3.h acopredictor.h acosolution.h
+HARD_DEPS=Makefile hpchain.h config.h vec3.h acopredictor.h acosolution.h cuda_device_utilities.cuh
 
 # Dependencies shared by all binaries produced
 COMMON_DEPS=hpchain.o config.o acopredictor.o

@@ -3,6 +3,7 @@
 #include <limits.h>
 #include <stdio.h>
 
+#include "cuda_device_utilities.cuh"
 #include "acopredictor.h"
 
 using std::cout;
@@ -15,11 +16,6 @@ __device__ const char UP    = 0;
 __device__ const char LEFT  = 2;
 __device__ const char RIGHT = 3;
 __device__ const char FRONT = 4;
-
-__device__
-void print(int3 a){
-	printf("(%d, %d, %d)", a.x, a.y, a.z);
-}
 
 __device__
 int3 *get_solution(int3 *solutions, int idx, int nCoords){
@@ -39,33 +35,6 @@ double get_pheromone(double *pheromone, int i, int d){
 __device__
 int3 *get_possiblePositions(int3 *possiblePositions, int idx){
 	return possiblePositions + idx*5;
-}
-
-__device__
-int3 operator-(int3 a, int3 b){
-	return {a.x - b.x, a.y - b.y, a.z - b.z};
-}
-
-__device__
-int3 operator+(int3 a, int3 b){
-	return {a.x + b.x, a.y + b.y, a.z + b.z};
-}
-
-__device__
-int norm1(int3 a){
-	return abs(a.x) + abs(a.y) + abs(a.z);
-}
-
-__device__
-void randomize(int &randNumber){
-	randNumber ^= (randNumber << 13);
-	randNumber ^= (randNumber >> 17);
-	randNumber ^= (randNumber << 15);
-}
-
-__device__
-double normal_rand(int randNumber){
-	return (unsigned int) randNumber / (double) UINT_MAX;
 }
 
 __device__
@@ -181,9 +150,8 @@ void develop_solution(int3 *solution, int nCoords, char *myDirections, int nMovE
 
 		// Decide direction
 		char direction = 0;
-		randomize(randNumber);
 		// Get number within 0-1
-		double unifRand = normal_rand(randNumber);
+		double unifRand = randomize_d(randNumber);
 		for(int j = 0; j < 5; j++){
 			if(unifRand < probs[j]){
 				direction = j;
@@ -235,11 +203,9 @@ void local_search(
 		otherDirections[i] = myDirections[i];
 
 	for(int i = 0; i < lsFreq; i++){
-		randomize(randNumber);
-		int idx = normal_rand(randNumber) * nCoords;
+		int idx = randomize_d(randNumber) * nCoords;
 
-		randomize(randNumber);
-		char direction = normal_rand(randNumber) * 5;
+		char direction = randomize_d(randNumber) * 5;
 		otherDirections[idx] = direction;
 
 		solution_from_directions(otherSolution, nCoords, otherDirections, nMovElems);
