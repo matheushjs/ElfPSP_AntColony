@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "cuda_device_utilities.cuh"
+#include "acopredictor_ant_cycle_cuda.cuh"
 #include "acopredictor.h"
 
 using std::cout;
@@ -18,27 +19,12 @@ __device__ const char RIGHT = 3;
 __device__ const char FRONT = 4;
 
 __device__
-int3 *get_solution(int3 *solutions, int idx, int nCoords){
-	return solutions + (nCoords * idx);
+double CUDAThread::pheromone(int i, int d){
+	return pheromones[i*5 + d];
 }
 
 __device__
-char *get_rel_directions(char *relDirections, int idx, int nMovElems){
-	return relDirections + idx*nMovElems;
-}
-
-__device__
-double get_pheromone(double *pheromone, int i, int d){
-	return pheromone[i*5 + d];
-}
-
-__device__
-int3 *get_possiblePositions(int3 *possiblePositions, int idx){
-	return possiblePositions + idx*5;
-}
-
-__device__
-int3 DIRECTION_VECTOR(int3 prevDir, char dir){
+int3 CUDAThread::DIRECTION_VECTOR(int3 prevDir, char dir){
 	if(dir == FRONT){
 		return prevDir;
 	}
@@ -71,19 +57,7 @@ int3 DIRECTION_VECTOR(int3 prevDir, char dir){
 }
 
 __device__
-int3 previous_direction(int3 *solution, int nCoords, int progress){
-	int3 back = solution[progress+1];
-	int3 backback = solution[progress];
-	return back - backback;
-}
-
-__device__
-int3 solution_back(int3 *solution, int nCoords, int progress){
-	return solution[progress+1];
-}
-
-__device__
-int calculate_contacts(int3 *solution, int nCoords, char *hpChain){
+int CUDAThread::calculate_contacts(int3 *solution){
 	int nContacts = 0;
 	for(int i = 0; i < nCoords; i++){
 		if(hpChain[i] == 'P') continue;
@@ -102,14 +76,10 @@ int calculate_contacts(int3 *solution, int nCoords, char *hpChain){
 }
 
 __device__
-void develop_solution(int3 *solution, int nCoords, char *myDirections, int nMovElems){
-	// TODO: Improve RNG!!! This won't even work across kernel calls.
-	int randNumber = (13235632^(threadIdx.x*threadIdx.x+77))>>(threadIdx.x%13);
-	int progress = 0;
-	
+void CUDAThread::develop_solution(int3 *solution, char *directions){
 	for(int i = 0; i < nMovElems; i++){
-		int3 prevDir = previous_direction(solution, nCoords, progress);
-		int3 prevBead = solution_back(solution, nCoords, progress);
+		int3 prevDir = solution[i+1] - solution[i];
+		int3 prevBead = solution[i+1];
 
 		/*
 		print(prevDir);
@@ -166,14 +136,13 @@ void develop_solution(int3 *solution, int nCoords, char *myDirections, int nMovE
 		*/
 
 		// Must be offset by 2, cuz the first 2 are (0,0,0) and (1,0,0) and we disconsider them
-		solution[progress+2] = possiblePos[direction];
-		myDirections[progress] = direction;
-		progress++;
+		solution[i+2] = possiblePos[direction];
+		directions[i] = direction;
 	}
 }
 
 __device__
-void solution_from_directions(int3 *solution, int nCoords, char *directions, int nMovElems){
+void CUDAThread::solution_from_directions(int3 *solution, char *directions){
 	solution[0] = {0,0,0};
 	solution[1] = {1,0,0};
 
@@ -185,31 +154,19 @@ void solution_from_directions(int3 *solution, int nCoords, char *directions, int
 }
 
 __device__
-void local_search(
-	int3 *mySolution,
-	int3 *otherSolution,
-	int nCoords,
-	char *myDirections,
-	char *otherDirections,
-	int nMovElems,
-	char *hpChain,
-	int &solContact,
-	int lsFreq
-){
-	int randNumber = (12876352^(threadIdx.x*threadIdx.x+77))>>(threadIdx.x%13);
-
+void CUDAThread::local_search(int &solContact, int lsFreq){
 	// Copy solution
 	for(int i = 0; i < nCoords; i++)
-		otherDirections[i] = myDirections[i];
+		myOtherDirections[i] = myDirections[i];
 
 	for(int i = 0; i < lsFreq; i++){
 		int idx = randomize_d(randNumber) * nCoords;
 
 		char direction = randomize_d(randNumber) * 5;
-		otherDirections[idx] = direction;
+		myOtherDirections[idx] = direction;
 
-		solution_from_directions(otherSolution, nCoords, otherDirections, nMovElems);
-		int contacts = calculate_contacts(otherSolution, nCoords, hpChain);
+		solution_from_directions(myOtherSolution, myOtherDirections);
+		int contacts = calculate_contacts(myOtherSolution);
 
 		// Check if is better
 		if(contacts > solContact){
@@ -217,17 +174,17 @@ void local_search(
 			solContact = contacts;
 
 			// Update directions
-			myDirections[idx] = otherDirections[idx];
+			myDirections[idx] = myOtherDirections[idx];
 
 			// Update solution
 			for(int i = 0; i < nCoords; i++)
-				mySolution[i] = otherSolution[i];
+				mySolution[i] = myOtherSolution[i];
 		}
 	}
 }
 
 __global__
-void ant_develop_solution_device(
+void HostToDevice::ant_develop_solution(
 	double *pheromone,
 	int nMovElems,
 	int3 *solutions,
@@ -239,32 +196,39 @@ void ant_develop_solution_device(
 	char *hpChain,
 	int lsFreq
 ){
-	int tid = blockIdx.x * blockDim.x + threadIdx.x;
+	CUDAThread *self = new CUDAThread();
+
+	self->tid = blockIdx.x * blockDim.x + threadIdx.x;
+	self->randNumber = (13235632^(threadIdx.x*threadIdx.x+77))>>(threadIdx.x%13);
 
 	// Get pointer to our data
-	int3 *mySolution   = get_solution(solutions, tid, nCoords);
-	int3 *myOtherSolution = get_solution(moreSolutions, tid, nCoords);
-	char *myDirections = get_rel_directions(relDirections, tid, nMovElems);
-	char *myOtherDirections = get_rel_directions(moreRelDirections, tid, nMovElems);
+	self->mySolution        = solutions + nCoords*self->tid;
+	self->myOtherSolution   = moreSolutions + nCoords*self->tid;
+	self->myDirections      = relDirections + nMovElems*self->tid;
+	self->myOtherDirections = moreRelDirections + nMovElems*self->tid;
+	self->pheromones = pheromone;
+	self->hpChain    = hpChain;
+	self->nCoords    = nCoords;
+	self->nMovElems  = nMovElems;
 
-	develop_solution(mySolution, nCoords, myDirections, nMovElems);
+	self->develop_solution(self->mySolution, self->myDirections);
 
 	// Now we calculate contacts
 	// If collisions are found, the solution is invalidated (and contacts = -1).
-	int nContacts = calculate_contacts(mySolution, nCoords, hpChain);
+	int nContacts = self->calculate_contacts(self->mySolution);
 
 	// Then we perform local search
-	local_search(mySolution, myOtherSolution, nCoords,
-			myDirections, myOtherDirections, nMovElems,
-			hpChain, nContacts, lsFreq);
+	self->local_search(nContacts, lsFreq);
 
-	contacts[tid] = nContacts;
+	contacts[self->tid] = nContacts;
 
-	if(tid == 0){
+	if(self->tid == 0){
 		for(int i = 0; i < gridDim.x * blockDim.x; i++){
 			printf("%d: %d\n", i, contacts[i]);
 		}
 	}
+
+	delete self;
 
 
 	/* DEBUG PROTEINS PRODUCED
@@ -307,6 +271,44 @@ void ant_develop_solution_device(
 	*/
 }
 
+
+ACOWithinCUDA::ACOWithinCUDA(
+	double *pheromones,
+	const string hpChain,
+	int nMovElems,
+	int nCoords,
+	int nAnts,
+	int lsFreq
+) :
+	dPheromone(nMovElems*5),
+	dSolutions(nCoords*nAnts),
+	dMoreSolutions(nCoords*nAnts),
+	dRelDirections(nMovElems*nAnts),
+	dMoreRelDirections(nMovElems*nAnts),
+	dContacts(nAnts),
+	dHPChain(hpChain.length()),
+	dNMovElems(nMovElems),
+	dNCoords(nCoords),
+	dNAnts(nAnts),
+	dLSFreq(dLSFreq)
+{
+	// Copy stuff
+	dPheromone.memcpyAsync(pheromones);
+	dHPChain.memcpyAsync(hpChain.c_str());
+	
+	int3 fillData[2] = {{0,0,0},{1,0,0}};
+	for(int i = 0; i < dNAnts; i++)
+		cudaMemcpyAsync(dSolutions.get() + i*nCoords, fillData, sizeof(int3)*2, cudaMemcpyHostToDevice);
+}
+
+void ACOWithinCUDA::run(){
+	// Call device function
+	HostToDevice::ant_develop_solution<<<1,dNAnts>>>(dPheromone, dNMovElems,
+			dSolutions, dMoreSolutions, dNCoords,
+			dRelDirections, dMoreRelDirections,
+			dContacts, dHPChain, dLSFreq);
+}
+
 void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nContacts){
 	/* Data we need in the GPU:
 	 *   - pheromone matrix
@@ -319,39 +321,12 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 	 *   - A second vector of solutions, in which threads can hold "tentative" solutions.
 	 * To sinalize error in solutions, we will set the first coordinate to (-1,0,0)
 	 */
+
 	int nCoords = dNMovElems + 2;
 	string hpChain = dHPChain.get_chain();
 
-	double *d_pheromone;         cudaMalloc(&d_pheromone, sizeof(double)*dNMovElems*5);
-	int3   *d_solutions;         cudaMalloc(&d_solutions, sizeof(int3)*nCoords*dNAnts);
-	int3   *d_moreSolutions;     cudaMalloc(&d_moreSolutions, sizeof(int3)*nCoords*dNAnts);
-	char   *d_relDirections;     cudaMalloc(&d_relDirections, sizeof(char)*dNAnts*dNMovElems);
-	char   *d_moreRelDirections; cudaMalloc(&d_moreRelDirections, sizeof(char)*dNAnts*dNMovElems);
-	int    *d_contacts;          cudaMalloc(&d_contacts, sizeof(int)*dNAnts);
-	char   *d_hpChain;           cudaMalloc(&d_hpChain, sizeof(char)*hpChain.length());
-
-	// Copy stuff
-	cudaMemcpyAsync(d_pheromone, dPheromone, sizeof(double)*dNMovElems*5, cudaMemcpyHostToDevice);
-	cudaMemcpyAsync(d_hpChain, hpChain.c_str(), sizeof(char)*hpChain.length(), cudaMemcpyHostToDevice);
-
-	int3 fillData[2] = {{0,0,0},{1,0,0}};
-	for(int i = 0; i < dNAnts; i++)
-		cudaMemcpyAsync(d_solutions + i*nCoords, fillData, sizeof(int3)*2, cudaMemcpyHostToDevice);
-
-	// Call device function
-	ant_develop_solution_device<<<1,dNAnts>>>(d_pheromone, dNMovElems,
-			d_solutions, d_moreSolutions, nCoords,
-			d_relDirections, d_moreRelDirections,
-			d_contacts, d_hpChain, dLSFreq);
-
-	// Free stuff
-	cudaFree(d_pheromone);
-	cudaFree(d_solutions);
-	cudaFree(d_moreSolutions);
-	cudaFree(d_relDirections);
-	cudaFree(d_moreRelDirections);
-	cudaFree(d_contacts);
-	cudaFree(d_hpChain);
+	ACOWithinCUDA aco(dPheromone, hpChain, dNMovElems, nCoords, dNAnts, dLSFreq);
+	aco.run();
 
 	// Let each ant develop a solution
 	for(int j = 0; j < dNAnts; j++){

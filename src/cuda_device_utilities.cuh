@@ -38,3 +38,16 @@ double randomize_d(int &movingSeed){
 	moveSeed(movingSeed);
 	return (unsigned int) movingSeed / (double) UINT_MAX;
 }
+
+template <typename T>
+class CUDAPointer {
+	T *dPointer;
+	size_t dNElems;
+public:
+	CUDAPointer(size_t nElems) : dNElems(nElems) { cudaMalloc(&dPointer, sizeof(T)*nElems); }
+	~CUDAPointer(){ cudaFree(dPointer); }
+	T *get(){ return dPointer; }
+	operator T*() { return dPointer; }
+	operator void*() { return (void *) dPointer; }
+	void memcpyAsync(const T *src){ cudaMemcpyAsync(dPointer, src, sizeof(T)*dNElems, cudaMemcpyHostToDevice); }
+};
