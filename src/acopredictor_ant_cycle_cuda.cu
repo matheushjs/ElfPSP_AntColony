@@ -204,23 +204,82 @@ void develop_solution(int3 *solution, int nCoords, char *myDirections, int nMovE
 	}
 }
 
+__device__
+void solution_from_directions(int3 *solution, int nCoords, char *directions, int nMovElems){
+	solution[0] = {0,0,0};
+	solution[1] = {1,0,0};
+
+	for(int i = 0; i < nMovElems; i++){
+		int3 prevDirection = solution[i+1] - solution[i];
+		int3 backBead = solution[i+1];
+		solution[i+2] = backBead + DIRECTION_VECTOR(prevDirection, directions[i]);
+	}
+}
+
+__device__
+void local_search(
+	int3 *mySolution,
+	int3 *otherSolution,
+	int nCoords,
+	char *myDirections,
+	char *otherDirections,
+	int nMovElems,
+	char *hpChain,
+	int &solContact,
+	int lsFreq
+){
+	int randNumber = (12876352^(threadIdx.x*threadIdx.x+77))>>(threadIdx.x%13);
+
+	// Copy solution
+	for(int i = 0; i < nCoords; i++)
+		otherDirections[i] = myDirections[i];
+
+	for(int i = 0; i < lsFreq; i++){
+		randomize(randNumber);
+		int idx = normal_rand(randNumber) * nCoords;
+
+		randomize(randNumber);
+		char direction = normal_rand(randNumber) * 5;
+		otherDirections[idx] = direction;
+
+		solution_from_directions(otherSolution, nCoords, otherDirections, nMovElems);
+		int contacts = calculate_contacts(otherSolution, nCoords, hpChain);
+
+		// Check if is better
+		if(contacts > solContact){
+			// Update contacts
+			solContact = contacts;
+
+			// Update directions
+			myDirections[idx] = otherDirections[idx];
+
+			// Update solution
+			for(int i = 0; i < nCoords; i++)
+				mySolution[i] = otherSolution[i];
+		}
+	}
+}
 
 __global__
 void ant_develop_solution_device(
 	double *pheromone,
 	int nMovElems,
 	int3 *solutions,
+	int3 *moreSolutions,
 	int nCoords,
 	char *relDirections,
-	int3 *possiblePositions,
+	char *moreRelDirections,
 	int *contacts,
-	char *hpChain
+	char *hpChain,
+	int lsFreq
 ){
 	int tid = blockIdx.x * blockDim.x + threadIdx.x;
 
 	// Get pointer to our data
 	int3 *mySolution   = get_solution(solutions, tid, nCoords);
+	int3 *myOtherSolution = get_solution(moreSolutions, tid, nCoords);
 	char *myDirections = get_rel_directions(relDirections, tid, nMovElems);
+	char *myOtherDirections = get_rel_directions(moreRelDirections, tid, nMovElems);
 
 	develop_solution(mySolution, nCoords, myDirections, nMovElems);
 
@@ -229,7 +288,9 @@ void ant_develop_solution_device(
 	int nContacts = calculate_contacts(mySolution, nCoords, hpChain);
 
 	// Then we perform local search
-
+	local_search(mySolution, myOtherSolution, nCoords,
+			myDirections, myOtherDirections, nMovElems,
+			hpChain, nContacts, lsFreq);
 
 	contacts[tid] = nContacts;
 
@@ -289,6 +350,7 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 	 *   - Vector of 5 possible next positions, for each solution
 	 *   - Vector of contact count, for each solution. We sinalize lost proteins with negative contacts.
 	 *   - Vector of HP chain
+	 *   - A second vector of solutions, in which threads can hold "tentative" solutions.
 	 * To sinalize error in solutions, we will set the first coordinate to (-1,0,0)
 	 */
 	int nCoords = dNMovElems + 2;
@@ -296,8 +358,9 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 
 	double *d_pheromone;         cudaMalloc(&d_pheromone, sizeof(double)*dNMovElems*5);
 	int3   *d_solutions;         cudaMalloc(&d_solutions, sizeof(int3)*nCoords*dNAnts);
+	int3   *d_moreSolutions;     cudaMalloc(&d_moreSolutions, sizeof(int3)*nCoords*dNAnts);
 	char   *d_relDirections;     cudaMalloc(&d_relDirections, sizeof(char)*dNAnts*dNMovElems);
-	int3   *d_possiblePositions; cudaMalloc(&d_possiblePositions, sizeof(int3)*5*dNAnts);
+	char   *d_moreRelDirections; cudaMalloc(&d_moreRelDirections, sizeof(char)*dNAnts*dNMovElems);
 	int    *d_contacts;          cudaMalloc(&d_contacts, sizeof(int)*dNAnts);
 	char   *d_hpChain;           cudaMalloc(&d_hpChain, sizeof(char)*hpChain.length());
 
@@ -310,15 +373,17 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 		cudaMemcpyAsync(d_solutions + i*nCoords, fillData, sizeof(int3)*2, cudaMemcpyHostToDevice);
 
 	// Call device function
-	ant_develop_solution_device<<<1,dNAnts>>>(d_pheromone, dNMovElems, d_solutions,
-			nCoords, d_relDirections, d_possiblePositions, d_contacts,
-			d_hpChain);
+	ant_develop_solution_device<<<1,dNAnts>>>(d_pheromone, dNMovElems,
+			d_solutions, d_moreSolutions, nCoords,
+			d_relDirections, d_moreRelDirections,
+			d_contacts, d_hpChain, dLSFreq);
 
 	// Free stuff
 	cudaFree(d_pheromone);
 	cudaFree(d_solutions);
+	cudaFree(d_moreSolutions);
 	cudaFree(d_relDirections);
-	cudaFree(d_possiblePositions);
+	cudaFree(d_moreRelDirections);
 	cudaFree(d_contacts);
 	cudaFree(d_hpChain);
 
