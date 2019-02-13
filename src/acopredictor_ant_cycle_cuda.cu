@@ -61,6 +61,11 @@ int3 CUDAThread::DIRECTION_VECTOR(int3 prevDir, char dir){
 __device__
 int CUDAThread::calculate_contacts(int3 *solution){
 	int nContacts = 0;
+
+	// Check if solution is invalidated
+	if(solution[0].x == -1)
+		return -1;
+
 	for(int i = 0; i < nCoords; i++){
 		if(hpChain[i] == 'P') continue;
 		for(int j = i+1; j < nCoords; j++){
