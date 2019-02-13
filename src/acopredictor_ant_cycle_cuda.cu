@@ -313,6 +313,16 @@ void HostToDevice::find_best_solution(int *contacts, int3 *solutions, int nSolut
 	}
 }
 
+__global__
+void HostToDevice::evaporate_pheromones(double *pheromones, int nMovElems, double evapRate){
+	const int nPheromones = nMovElems * 5;
+	int tid = blockIdx.x*blockDim.x + threadIdx.x;
+	int stride = gridDim.x*blockDim.x;
+
+	for(int i = tid; i < nPheromones; i += stride)
+		pheromones[i] *= (1 - evapRate);
+}
+
 ACOWithinCUDA::ACOWithinCUDA(
 	double *pheromones,
 	const string hpChain,
@@ -320,7 +330,8 @@ ACOWithinCUDA::ACOWithinCUDA(
 	int nCoords,
 	int nAnts,
 	int lsFreq,
-	int nSols
+	int nSols,
+	double evap
 ) :
 	dPheromone(nMovElems*5),
 	dSolutions(nCoords*nAnts),
@@ -333,7 +344,8 @@ ACOWithinCUDA::ACOWithinCUDA(
 	dNCoords(nCoords),
 	dNAnts(nAnts),
 	dLSFreq(dLSFreq),
-	dNSolutions(nSols)
+	dNSolutions(nSols),
+	dEvap(evap)
 {
 	// Copy stuff
 	dPheromone.memcpyAsync(pheromones);
@@ -352,6 +364,8 @@ void ACOWithinCUDA::run(){
 
 	// We copy best solution into first solution of dMoreSolutions
 	HostToDevice::find_best_solution<<<1,1024>>>(dContacts, dSolutions, dNSolutions, dMoreSolutions, dNCoords);
+
+	HostToDevice::evaporate_pheromones<<<1,1024>>>(dPheromone, dNMovElems, dEvap);
 }
 
 void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nContacts){
@@ -370,7 +384,7 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 	int nCoords = dNMovElems + 2;
 	string hpChain = dHPChain.get_chain();
 
-	ACOWithinCUDA aco(dPheromone, hpChain, dNMovElems, nCoords, dNAnts, dLSFreq, antsSolutions.size());
+	ACOWithinCUDA aco(dPheromone, hpChain, dNMovElems, nCoords, dNAnts, dLSFreq, antsSolutions.size(), dEvap);
 	aco.run();
 
 	// Let each ant develop a solution

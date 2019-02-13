@@ -43,6 +43,9 @@ namespace HostToDevice{
 
 	__global__
 	void find_best_solution(int *contacts, int3 *solutions, int nSolutions, int3 *outSolution, int nCoords);
+
+	__global__
+	void evaporate_pheromones(double *pheromones, int nMovElems, double evapRate);
 }
 
 class ACOWithinCUDA {
@@ -58,10 +61,11 @@ class ACOWithinCUDA {
 	int dNAnts;
 	int dLSFreq;
 	int dNSolutions;
+	double dEvap;
 
 
 public:
 	ACOWithinCUDA(double *pheromones, const std::string hpChain, int nMovElems,
-			int nCoords, int nAnts, int lsFreq, int nSols);
+			int nCoords, int nAnts, int lsFreq, int nSols, double evap);
 	void run();
 };
