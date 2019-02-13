@@ -159,14 +159,48 @@ void CUDAThread::local_search(int &solContact, int lsFreq){
 	for(int i = 0; i < nCoords; i++)
 		myOtherDirections[i] = myDirections[i];
 
+	/* DEBUG LOCAL SEARCH
+	if(this->tid == 5){
+		printf("Solution: ");
+		for(int i = 0; i < nCoords; i++){
+			print(mySolution[i]);
+			printf(" ");
+		}
+		printf("\n");
+	}
+	*/
+
 	for(int i = 0; i < lsFreq; i++){
 		int idx = randomize_d(randNumber) * nCoords;
+
+		/* DEBUG LOCAL SEARCH
+		if(this->tid == 5){
+			printf("idx: %d    ", idx);
+		}
+		*/
 
 		char direction = randomize_d(randNumber) * 5;
 		myOtherDirections[idx] = direction;
 
+		/* DEBUG LOCAL SEARCH
+		if(this->tid == 5){
+			printf("olddir: %d    dir: %d\n", myDirections[idx], direction);
+		}
+		*/
+
 		solution_from_directions(myOtherSolution, myOtherDirections);
 		int contacts = calculate_contacts(myOtherSolution);
+
+		/* DEBUG LOCAL SEARCH
+		if(this->tid == 5){
+			printf("Generated: ");
+			for(int j = 0; j < nCoords; j++){
+				print(myOtherSolution[j]);
+				printf(" ");
+			}
+			printf("\n");
+		}
+		*/
 
 		// Check if is better
 		if(contacts > solContact){
@@ -177,8 +211,8 @@ void CUDAThread::local_search(int &solContact, int lsFreq){
 			myDirections[idx] = myOtherDirections[idx];
 
 			// Update solution
-			for(int i = 0; i < nCoords; i++)
-				mySolution[i] = myOtherSolution[i];
+			for(int j = 0; j < nCoords; j++)
+				mySolution[j] = myOtherSolution[j];
 		}
 	}
 }
@@ -222,14 +256,15 @@ void HostToDevice::ant_develop_solution(
 
 	contacts[self->tid] = nContacts;
 
+	/* DEBUG CONTACTS
 	if(self->tid == 0){
 		for(int i = 0; i < gridDim.x * blockDim.x; i++){
 			printf("%d: %d\n", i, contacts[i]);
 		}
 	}
+	*/
 
 	delete self;
-
 
 	/* DEBUG PROTEINS PRODUCED
 	for(int i = 0; i < gridDim.x * blockDim.x; i++){
@@ -280,6 +315,15 @@ void HostToDevice::find_best_solution(int *contacts, int3 *solutions, int nSolut
 	int tid = threadIdx.x;
 	int stride = blockDim.x;
 
+	/* DEBUG FIND BEST
+	if(tid == 0){
+		printf("Contacts: ");
+		for(int i = 0; i < nSolutions; i++)
+			printf("%d ", contacts[i]);
+		printf("\n");
+	}
+	*/
+
 	int maxContacts = -1;
 	int maxIndex = -1;
 
@@ -306,6 +350,13 @@ void HostToDevice::find_best_solution(int *contacts, int3 *solutions, int nSolut
 		__syncthreads();
 	}
 
+	/* DEBUG FIND BEST
+	if(tid == 0){
+		printf("Best contacts: %d    ", shContacts[0]);
+		printf("Best index: %d\n", shIndex[0]);
+	}
+	*/
+
 	// Copy best solution into out buffer
 	int3 *bestSol = solutions + shIndex[0] * nCoords;
 	for(int i = tid; i < nCoords; i += stride){
@@ -331,11 +382,33 @@ void HostToDevice::deposit_pheromones(
 	char *myDirections = directions + nMovElems*tid;
 	double pheroAmount = contacts[tid] / hCount;
 
+	/* DEBUG DEPOSIT
+	if(tid == 5){
+		for(int i = 0; i < 5; i++){
+			for(int j = 0; j < nMovElems; j++){
+				printf("%.3lf ", pheromones[j*5 + i]);
+			}
+			printf("\n");
+		}
+	}
+	*/
+
 	for(int i = 0; i < nMovElems; i++){
 		int d = myDirections[i];
 		double *pheroPos = pheromones + (i*5 + d);
 		atomicAdd_d(pheroPos, pheroAmount);
 	}
+
+	/* DEBUG DEPOSIT
+	if(tid == 5){
+		for(int i = 0; i < 5; i++){
+			for(int j = 0; j < nMovElems; j++){
+				printf("%.3lf ", pheromones[j*5 + i]);
+			}
+			printf("\n");
+		}
+	}
+	*/
 }
 
 ACOWithinCUDA::ACOWithinCUDA(
@@ -359,7 +432,7 @@ ACOWithinCUDA::ACOWithinCUDA(
 	dNMovElems(nMovElems),
 	dNCoords(nCoords),
 	dNAnts(nAnts),
-	dLSFreq(dLSFreq),
+	dLSFreq(lsFreq),
 	dNSolutions(nSols),
 	dHCount(hCount),
 	dEvap(evap)
@@ -405,7 +478,7 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 
 	ACOWithinCUDA aco(
 			dPheromone, hpChain, dNMovElems, nCoords, dNAnts, dLSFreq,
-			antsSolutions.size(), dHCount, dEvap);
+			dNAnts, dHCount, dEvap);
 	aco.run();
 
 	// Let each ant develop a solution
