@@ -524,14 +524,18 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 	int nCoords = dNMovElems + 2;
 	string hpChain = dHPChain.get_chain();
 
-	// Allocation
+	const int antsPerBlock = 256;
+	const int nBlocks      = (dNAnts + antsPerBlock - 1) / antsPerBlock;
+	const int totalAnts    = antsPerBlock * nBlocks; // This is >= dNAnts
+
+	// Allocation. We allocate more space just so that the extra threads don't cause segfaults
 	ACODeviceData d = {
 		.pheromone         = dNMovElems*5,
-		.solutions         = nCoords*dNAnts,
-		.moreSolutions     = nCoords*dNAnts,
-		.relDirections     = dNMovElems*dNAnts,
-		.moreRelDirections = dNMovElems*dNAnts,
-		.contacts          = dNAnts,
+		.solutions         = nCoords*totalAnts,
+		.moreSolutions     = nCoords*totalAnts,
+		.relDirections     = dNMovElems*totalAnts,
+		.moreRelDirections = dNMovElems*totalAnts,
+		.contacts          = totalAnts,
 		.bestContact       = 1,
 		.hpChain           = hpChain.length()
 	};
@@ -543,8 +547,9 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 	for(int i = 0; i < dNAnts; i++)
 		cudaMemcpyAsync(d.solutions.get() + i*nCoords, fillData, sizeof(int3)*2, cudaMemcpyHostToDevice);
 
-	// Call kernels
-	HostToDevice::ant_develop_solution<<<1,dNAnts>>>(d.pheromone, dNMovElems,
+	// Let GPU develop solutions
+	// Here each ant develops a solution
+	HostToDevice::ant_develop_solution<<<nBlocks,antsPerBlock>>>(d.pheromone, dNMovElems,
 			d.solutions, d.moreSolutions, nCoords,
 			d.relDirections, d.moreRelDirections,
 			d.contacts, d.hpChain, dLSFreq, dAlpha, dBeta);
@@ -555,7 +560,7 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 			d.moreRelDirections, d.bestContact);
 
 	HostToDevice::evaporate_pheromones<<<1,1024>>>(d.pheromone, dNMovElems, dEvap);
-	HostToDevice::deposit_pheromones<<<1,dNAnts>>>(d.pheromone, dNMovElems, d.relDirections, d.contacts, dHCount);
+	HostToDevice::deposit_pheromones<<<nBlocks,antsPerBlock>>>(d.pheromone, dNMovElems, d.relDirections, d.contacts, dHCount);
 
 	// Fetching. We have to update the pheromones and best solutions, if needed
 	int bestContact;
