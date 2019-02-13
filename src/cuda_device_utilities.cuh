@@ -61,10 +61,25 @@ class CUDAPointer {
 	T *dPointer;
 	size_t dNElems;
 public:
-	CUDAPointer(size_t nElems) : dNElems(nElems) { cudaMalloc(&dPointer, sizeof(T)*nElems); }
+	CUDAPointer(size_t nElems) : dNElems(nElems) {
+		cudaMalloc(&dPointer, sizeof(T)*nElems);
+	}
+
 	~CUDAPointer(){ cudaFree(dPointer); }
+	
 	T *get(){ return dPointer; }
+	
 	operator T*() { return dPointer; }
+	
 	operator void*() { return (void *) dPointer; }
-	void memcpyAsync(const T *src){ cudaMemcpyAsync(dPointer, src, sizeof(T)*dNElems, cudaMemcpyHostToDevice); }
+	
+	void memcpyAsync(const T *src){
+		cudaMemcpyAsync(dPointer, src, sizeof(T)*dNElems, cudaMemcpyHostToDevice);
+	}
+	
+	void copyTo(T *dest, int nElems){
+		cudaMemcpy(dest, dPointer, sizeof(T)*nElems, cudaMemcpyDeviceToHost);
+	}
+	
+	void copyTo(T *dest){ copyTo(dest, dNElems); }
 };

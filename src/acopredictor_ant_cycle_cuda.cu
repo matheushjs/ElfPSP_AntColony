@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <memory>
 #include <limits.h>
 #include <stdio.h>
 
@@ -11,6 +12,7 @@ using std::cout;
 using std::cerr;
 using std::vector;
 using std::string;
+using std::unique_ptr;
 
 __device__ const char UP    = 0;
 //__device__ const char DOWN  = 1;
@@ -307,7 +309,11 @@ void HostToDevice::ant_develop_solution(
 }
 
 __global__
-void HostToDevice::find_best_solution(int *contacts, int3 *solutions, int nSolutions, int3 *outSolution, int nCoords){
+void HostToDevice::find_best_solution(
+	int *contacts, int nContacts,
+	char *directions, int nMovElems,
+	char *outDirections, int *outBestContact
+){
 	// Index of best solutions
 	__shared__ int shContacts[1024];
 	__shared__ int shIndex[1024];
@@ -318,16 +324,15 @@ void HostToDevice::find_best_solution(int *contacts, int3 *solutions, int nSolut
 	/* DEBUG FIND BEST
 	if(tid == 0){
 		printf("Contacts: ");
-		for(int i = 0; i < nSolutions; i++)
+		for(int i = 0; i < nContacts; i++)
 			printf("%d ", contacts[i]);
 		printf("\n");
-	}
-	*/
+	}*/
 
 	int maxContacts = -1;
 	int maxIndex = -1;
 
-	for(int i = tid; i < nSolutions; i += stride){
+	for(int i = tid; i < nContacts; i += stride){
 		if(contacts[i] > maxContacts){
 			maxContacts = contacts[i];
 			maxIndex = i;
@@ -357,11 +362,15 @@ void HostToDevice::find_best_solution(int *contacts, int3 *solutions, int nSolut
 	}
 	*/
 
-	// Copy best solution into out buffer
-	int3 *bestSol = solutions + shIndex[0] * nCoords;
-	for(int i = tid; i < nCoords; i += stride){
-		outSolution[i] = bestSol[i];
+	// copy best directions into out buffer
+	char *bestDir = directions + shIndex[0] * nMovElems;
+	for(int i = tid; i < nMovElems; i += stride){
+		outDirections[i] = bestDir[i];
 	}
+	
+	// Copy contacts into out buffer too
+	if(tid == 0)
+		*outBestContact = shContacts[0];
 }
 
 __global__
@@ -411,55 +420,6 @@ void HostToDevice::deposit_pheromones(
 	*/
 }
 
-ACOWithinCUDA::ACOWithinCUDA(
-	double *pheromones,
-	const string hpChain,
-	int nMovElems,
-	int nCoords,
-	int nAnts,
-	int lsFreq,
-	int nSols,
-	int hCount,
-	double evap
-) :
-	dPheromone(nMovElems*5),
-	dSolutions(nCoords*nAnts),
-	dMoreSolutions(nCoords*nAnts),
-	dRelDirections(nMovElems*nAnts),
-	dMoreRelDirections(nMovElems*nAnts),
-	dContacts(nAnts),
-	dHPChain(hpChain.length()),
-	dNMovElems(nMovElems),
-	dNCoords(nCoords),
-	dNAnts(nAnts),
-	dLSFreq(lsFreq),
-	dNSolutions(nSols),
-	dHCount(hCount),
-	dEvap(evap)
-{
-	// Copy stuff
-	dPheromone.memcpyAsync(pheromones);
-	dHPChain.memcpyAsync(hpChain.c_str());
-	
-	int3 fillData[2] = {{0,0,0},{1,0,0}};
-	for(int i = 0; i < dNAnts; i++)
-		cudaMemcpyAsync(dSolutions.get() + i*nCoords, fillData, sizeof(int3)*2, cudaMemcpyHostToDevice);
-}
-
-void ACOWithinCUDA::run(){
-	HostToDevice::ant_develop_solution<<<1,dNAnts>>>(dPheromone, dNMovElems,
-			dSolutions, dMoreSolutions, dNCoords,
-			dRelDirections, dMoreRelDirections,
-			dContacts, dHPChain, dLSFreq);
-
-	// We copy best solution into first solution of dMoreSolutions
-	HostToDevice::find_best_solution<<<1,1024>>>(dContacts, dSolutions, dNSolutions, dMoreSolutions, dNCoords);
-
-	HostToDevice::evaporate_pheromones<<<1,1024>>>(dPheromone, dNMovElems, dEvap);
-
-	HostToDevice::deposit_pheromones<<<1,dNAnts>>>(dPheromone, dNMovElems, dRelDirections, dContacts, dHCount);
-}
-
 void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nContacts){
 	/* Data we need in the GPU:
 	 *   - pheromone matrix
@@ -472,58 +432,63 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 	 *   - A second vector of solutions, in which threads can hold "tentative" solutions.
 	 * To sinalize error in solutions, we will set the first coordinate to (-1,0,0)
 	 */
-
 	int nCoords = dNMovElems + 2;
 	string hpChain = dHPChain.get_chain();
 
-	ACOWithinCUDA aco(
-			dPheromone, hpChain, dNMovElems, nCoords, dNAnts, dLSFreq,
-			dNAnts, dHCount, dEvap);
-	aco.run();
+	// Allocation
+	ACODeviceData d = {
+		.pheromone         = dNMovElems*5,
+		.solutions         = nCoords*dNAnts,
+		.moreSolutions     = nCoords*dNAnts,
+		.relDirections     = dNMovElems*dNAnts,
+		.moreRelDirections = dNMovElems*dNAnts,
+		.contacts          = dNAnts,
+		.bestContact       = 1,
+		.hpChain           = hpChain.length()
+	};
 
-	// Let each ant develop a solution
-	for(int j = 0; j < dNAnts; j++){
-		ACOSolution currentSol = ant_develop_solution();
-		if(currentSol.has_error() == false){
-			antsSolutions.push_back(currentSol);
-		}
-	}
+	// Copying
+	d.pheromone.memcpyAsync(dPheromone);
+	d.hpChain.memcpyAsync(hpChain.c_str());
+	int3 fillData[2] = {{0,0,0},{1,0,0}};
+	for(int i = 0; i < dNAnts; i++)
+		cudaMemcpyAsync(d.solutions.get() + i*nCoords, fillData, sizeof(int3)*2, cudaMemcpyHostToDevice);
 
-	// Calculate contacts
-	for(unsigned j = 0; j < antsSolutions.size(); j++)
-		nContacts[j] = antsSolutions[j].count_contacts(dHPChain);
+	// Call kernels
+	HostToDevice::ant_develop_solution<<<1,dNAnts>>>(d.pheromone, dNMovElems,
+			d.solutions, d.moreSolutions, nCoords,
+			d.relDirections, d.moreRelDirections,
+			d.contacts, d.hpChain, dLSFreq);
 
-	// Perform local search
-	for(unsigned j = 0; j < antsSolutions.size(); j++){
-		for(int k = 0; k < dLSFreq; k++){
-			ACOSolution tentative = antsSolutions[j];
-			int lim = this->random() * tentative.directions().size();
-			for(int l = 0; l < lim; l++){
-				tentative.perturb_one(dRandGen[0]);
-			}
-			int contacts = tentative.count_contacts(dHPChain);
-			if(contacts > nContacts[j]){
-				antsSolutions[j] = tentative;
-			}
-		}
-	}
+	// We copy best solution into first solution d.moreRelDirections
+	HostToDevice::find_best_solution<<<1,1024>>>(d.contacts, dNAnts,
+			d.relDirections, dNMovElems,
+			d.moreRelDirections, d.bestContact);
 
-	// Check best protein
-	for(unsigned j = 0; j < antsSolutions.size(); j++){
-		if(nContacts[j] > dBestContacts){
-			dBestSol = antsSolutions[j];
-			dBestContacts = nContacts[j];
-		}
-	}
+	HostToDevice::evaporate_pheromones<<<1,1024>>>(d.pheromone, dNMovElems, dEvap);
+	HostToDevice::deposit_pheromones<<<1,dNAnts>>>(d.pheromone, dNMovElems, d.relDirections, d.contacts, dHCount);
 
-	// Evaporate pheromones
+	// Fetching. We have to update the pheromones and best solutions, if needed
+	int bestContact;
+	char *bestDir = new char[dNMovElems];
+
+	d.pheromone.copyTo(dPheromone);
+	d.bestContact.copyTo(&bestContact);
+	d.moreRelDirections.copyTo(bestDir, dNMovElems);
+
+	/* DEBUG Fetching
+	cout << "Best: " << bestContact << "\n";
 	for(int i = 0; i < dNMovElems; i++){
-		for(int j = 0; j < 5; j++){
-			pheromone(i, j) *= (1 - dEvap);
-		}
+		cout << (int) bestDir[i] << " ";
+	} cout << "\n";
+	*/
+
+	if(bestContact > dBestContacts){
+		dBestContacts = bestContact;
+
+		vector<char> vecDir(bestDir, bestDir + dNMovElems);
+		dBestSol = ACOSolution(vecDir);
 	}
-	
-	// Deposit pheromones
-	for(unsigned j = 0; j < antsSolutions.size(); j++)
-		ant_deposit_pheromone(antsSolutions[j].directions(), nContacts[j]);
+
+	delete[] bestDir;
 }
