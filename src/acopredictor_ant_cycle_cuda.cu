@@ -19,7 +19,7 @@ __device__ const char RIGHT = 3;
 __device__ const char FRONT = 4;
 
 __device__
-double CUDAThread::pheromone(int i, int d){
+double &CUDAThread::pheromone(int i, int d){
 	return pheromones[i*5 + d];
 }
 
@@ -323,6 +323,21 @@ void HostToDevice::evaporate_pheromones(double *pheromones, int nMovElems, doubl
 		pheromones[i] *= (1 - evapRate);
 }
 
+__global__
+void HostToDevice::deposit_pheromones(
+	double *pheromones, int nMovElems, char *directions, int *contacts, int hCount
+){
+	int tid = blockIdx.x * blockDim.x + threadIdx.x;
+	char *myDirections = directions + nMovElems*tid;
+	double pheroAmount = contacts[tid] / hCount;
+
+	for(int i = 0; i < nMovElems; i++){
+		int d = myDirections[i];
+		double *pheroPos = pheromones + (i*5 + d);
+		atomicAdd_d(pheroPos, pheroAmount);
+	}
+}
+
 ACOWithinCUDA::ACOWithinCUDA(
 	double *pheromones,
 	const string hpChain,
@@ -331,6 +346,7 @@ ACOWithinCUDA::ACOWithinCUDA(
 	int nAnts,
 	int lsFreq,
 	int nSols,
+	int hCount,
 	double evap
 ) :
 	dPheromone(nMovElems*5),
@@ -345,6 +361,7 @@ ACOWithinCUDA::ACOWithinCUDA(
 	dNAnts(nAnts),
 	dLSFreq(dLSFreq),
 	dNSolutions(nSols),
+	dHCount(hCount),
 	dEvap(evap)
 {
 	// Copy stuff
@@ -366,6 +383,8 @@ void ACOWithinCUDA::run(){
 	HostToDevice::find_best_solution<<<1,1024>>>(dContacts, dSolutions, dNSolutions, dMoreSolutions, dNCoords);
 
 	HostToDevice::evaporate_pheromones<<<1,1024>>>(dPheromone, dNMovElems, dEvap);
+
+	HostToDevice::deposit_pheromones<<<1,dNAnts>>>(dPheromone, dNMovElems, dRelDirections, dContacts, dHCount);
 }
 
 void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nContacts){
@@ -384,7 +403,9 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 	int nCoords = dNMovElems + 2;
 	string hpChain = dHPChain.get_chain();
 
-	ACOWithinCUDA aco(dPheromone, hpChain, dNMovElems, nCoords, dNAnts, dLSFreq, antsSolutions.size(), dEvap);
+	ACOWithinCUDA aco(
+			dPheromone, hpChain, dNMovElems, nCoords, dNAnts, dLSFreq,
+			antsSolutions.size(), dHCount, dEvap);
 	aco.run();
 
 	// Let each ant develop a solution

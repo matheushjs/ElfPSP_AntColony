@@ -21,7 +21,7 @@ struct CUDAThread {
 	__device__ void solution_from_directions(int3 *solution, char *directions);
 	__device__ void local_search(int &solContact, int lsFreq);
 
-	__device__ double pheromone(int i, int d);
+	__device__ double &pheromone(int i, int d);
 	__device__ int calculate_contacts(int3 *solution);
 	__device__ void develop_solution(int3 *solution, char *directions);
 };
@@ -46,6 +46,10 @@ namespace HostToDevice{
 
 	__global__
 	void evaporate_pheromones(double *pheromones, int nMovElems, double evapRate);
+
+	__global__
+	void deposit_pheromones(double *pheromones, int nMovElems, char *directions, int *contacts, int hCount);
+
 }
 
 class ACOWithinCUDA {
@@ -61,11 +65,12 @@ class ACOWithinCUDA {
 	int dNAnts;
 	int dLSFreq;
 	int dNSolutions;
+	int dHCount;
 	double dEvap;
 
 
 public:
 	ACOWithinCUDA(double *pheromones, const std::string hpChain, int nMovElems,
-			int nCoords, int nAnts, int lsFreq, int nSols, double evap);
+			int nCoords, int nAnts, int lsFreq, int nSols, int hCount, double evap);
 	void run();
 };
