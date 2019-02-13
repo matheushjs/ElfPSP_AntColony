@@ -15,6 +15,8 @@ struct CUDAThread {
 	char *hpChain;
 	int nCoords;
 	int nMovElems;
+	double dAlpha;
+	double dBeta;
 
 	static __device__ int3 DIRECTION_VECTOR(int3 prevDir, char dir);
 
@@ -23,16 +25,19 @@ struct CUDAThread {
 
 	__device__ double &pheromone(int i, int d);
 	__device__ int calculate_contacts(int3 *solution);
+	__device__ void get_heuristics(int curSize, int3 *solution, double *heurs, int3 *possiblePos);
+	__device__ void get_probabilities(int movIndex, double *probs, double *heurs);
 	__device__ void develop_solution(int3 *solution, char *directions);
 };
 
-namespace HostToDevice{
+namespace HostToDevice {
 	__global__
 	void ant_develop_solution(
 		double *pheromone,   int nMovElems,
 		int3 *solutions,     int3 *moreSolutions, int nCoords,
 		char *relDirections, char *moreRelDirections,
-		int *contacts,       char *hpChain,       int lsFreq
+		int *contacts,       char *hpChain,       int lsFreq,
+		double alpha,        double beta
 	);
 
 	__global__

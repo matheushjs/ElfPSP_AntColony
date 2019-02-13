@@ -3,6 +3,8 @@
 #include <memory>
 #include <limits.h>
 #include <stdio.h>
+#include <math.h>
+#include <math_constants.h> // CUDART_NAN
 
 #include "cuda_device_utilities.cuh"
 #include "acopredictor_ant_cycle_cuda.cuh"
@@ -83,6 +85,84 @@ int CUDAThread::calculate_contacts(int3 *solution){
 }
 
 __device__
+void CUDAThread::get_heuristics(int curSize, int3 *solution, double *heurs, int3 *possiblePos){
+	heurs[0] = 0; heurs[1] = 0; heurs[2] = 0;
+	heurs[3] = 0; heurs[4] = 0;
+
+	char horp = this->hpChain[curSize];
+	int contacts[5] = { 0, 0, 0, 0, 0 };
+	int collisions[5] = { 0, 0, 0, 0, 0 };
+
+	// Get number of contacts per possible position
+	// Here we assume bead is H
+	for(int i = 0; i < 5; i++){
+		int3 nextPos = possiblePos[i];
+		for(int j = 0; j < curSize; j++){
+			int norm = norm1(nextPos - solution[j]);
+
+			if(norm == 0){
+				collisions[i]++;
+			} else if(norm == 1 && this->hpChain[j] == 'H'){
+				contacts[i] += 1;
+			}
+		}
+	}
+
+	// If bead is P, we disregard the 'contacts' vector
+	if(horp == 'P'){
+		for(int i = 0; i < 5; i++){
+			if(collisions[i] == 0)
+				heurs[i] = 1.0;
+			else
+				heurs[i] = 0.0;
+		}
+	} else {
+		for(int i = 0; i < 5; i++){
+			if(collisions[i] == 0)
+				heurs[i] = 1.0 + contacts[i];
+			else
+				heurs[i] = 0.0;
+		}
+	}
+}
+
+__device__
+void CUDAThread::get_probabilities(int movIndex, double *probs, double *heurs){
+	probs[0] = 0.2; probs[1] = 0.2; probs[2] = 0.2;
+	probs[3] = 0.2; probs[4] = 0.2;
+
+	double sum = 0;
+
+	for(int d = 0; d < 5; d++){
+		double A = powf(pheromone(movIndex, d), dAlpha);
+		double B = powf(heurs[d], dBeta);
+		double aux = A * B;
+
+		sum += aux;
+		probs[d] = aux;
+	}
+
+	// If sum is 0, would give us division by 0
+	if(sum == 0){
+		probs[0] = 0.2; probs[1] = 0.2; probs[2] = 0.2;
+		probs[3] = 0.2; probs[4] = 0.2;
+		return;
+	}
+
+	// sum should not be inf or nan. The user must control this.
+	if(sum < -1E9 || sum > 1E9 || sum == CUDART_NAN){
+		printf("ERROR: Encountered unexpected 'Not a Number' or 'Inf'.\n"
+		"Please control the ACO_ALPHA and ACO_BETA parameters more suitably.\n"
+		"Keep in mind that the base for ACO_BETA may be higher than 0, "
+		"and the base for ACO_ALPHA may be very near 0.\n");
+	}
+
+	for(int d = 0; d < 5; d++){
+		probs[d] /= sum;
+	}
+}
+
+__device__
 void CUDAThread::develop_solution(int3 *solution, char *directions){
 	for(int i = 0; i < nMovElems; i++){
 		int3 prevDir = solution[i+1] - solution[i];
@@ -110,16 +190,16 @@ void CUDAThread::develop_solution(int3 *solution, char *directions){
 		printf("\n");
 		*/
 
-		// TODO: get heuristics
-		double heurs[5] = {1, 1, 1, 1, 1};
+		double heurs[5];
+		this->get_heuristics(i, solution, heurs, possiblePos);
 
 		// If all heuristics are 0, there is no possible next direction to take.
 		double sum = heurs[0] + heurs[1] + heurs[2] + heurs[3] + heurs[4];
 		if(sum == 0)
 			solution[0].x = -1; // Signalizes error
 		
-		// TODO: get probabilities
-		double probs[5] = {0.2, 0.2, 0.2, 0.2, 0.2};
+		double probs[5];
+		this->get_probabilities(i, probs, heurs);
 
 		// Accumulate the probability vector
 		for(int j = 1; j < 5; j++)
@@ -235,7 +315,9 @@ void HostToDevice::ant_develop_solution(
 	char *moreRelDirections,
 	int *contacts,
 	char *hpChain,
-	int lsFreq
+	int lsFreq,
+	double alpha,
+	double beta
 ){
 	CUDAThread *self = new CUDAThread();
 
@@ -251,6 +333,8 @@ void HostToDevice::ant_develop_solution(
 	self->hpChain    = hpChain;
 	self->nCoords    = nCoords;
 	self->nMovElems  = nMovElems;
+	self->dAlpha     = alpha;
+	self->dBeta      = beta;
 
 	self->develop_solution(self->mySolution, self->myDirections);
 
@@ -463,7 +547,7 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 	HostToDevice::ant_develop_solution<<<1,dNAnts>>>(d.pheromone, dNMovElems,
 			d.solutions, d.moreSolutions, nCoords,
 			d.relDirections, d.moreRelDirections,
-			d.contacts, d.hpChain, dLSFreq);
+			d.contacts, d.hpChain, dLSFreq, dAlpha, dBeta);
 
 	// We copy best solution into first solution d.moreRelDirections
 	HostToDevice::find_best_solution<<<1,1024>>>(d.contacts, dNAnts,
