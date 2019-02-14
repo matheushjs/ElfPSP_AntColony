@@ -4,6 +4,10 @@
 
 #include "cuda_device_utilities.cuh"
 
+/** Holds data needed by each CUDA thread to execute its work.
+ * We associate __device__ functions with this structure, which makes access to this
+ *   struct's data by a thread much easier.
+ */
 struct CUDAThread {
 	int tid;
 	int randNumber;
