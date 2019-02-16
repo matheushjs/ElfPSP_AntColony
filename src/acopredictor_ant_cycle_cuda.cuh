@@ -9,8 +9,8 @@
  *   struct's data by a thread much easier.
  */
 struct CUDAThread {
-	int tid;
-	int randNumber;
+	int tid; /**< Unique identifier for the thread within all blocks (the grid). */
+	int randNumber; /**< Random number that also serves as the seed for generation. */
 	int3 *mySolution;
 	int3 *myOtherSolution;
 	char *myDirections;
