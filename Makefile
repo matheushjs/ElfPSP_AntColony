@@ -16,7 +16,7 @@ COMMON_DEPS=hpchain.o config.o acopredictor.o
 VPATH=src/
 
 all:
-	make prog_bt prog_nbt prog_bt_mpi prog_nbt_mpi prog_bt_omp prog_nbt_cuda test
+	+make prog_bt prog_nbt prog_bt_mpi prog_nbt_mpi prog_bt_omp prog_nbt_cuda test
 
 prog_bt_mpi: main.o $(COMMON_DEPS)  acopredictor_predict.mpi.o acopredictor_backtracking.o acopredictor_ant_cycle.o
 	g++ $(CFLAGS) $(MPI_CFLAGS) $^ -o $@ $(MPI_LIBS)
