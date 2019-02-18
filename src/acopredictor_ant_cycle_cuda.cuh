@@ -11,16 +11,18 @@
 struct CUDAThread {
 	int tid; /**< Unique identifier for the thread within all blocks (the grid). */
 	int randNumber; /**< Random number that also serves as the seed for generation. */
-	int3 *mySolution;
-	int3 *myOtherSolution;
-	char *myDirections;
-	char *myOtherDirections;
-	double *pheromones;
-	char *hpChain;
-	int nCoords;
-	int nMovElems;
-	double dAlpha;
-	double dBeta;
+	int3 *mySolution; /**< Memory region containing coordinates of the solution this
+	                       thread is developing. */
+	int3 *myOtherSolution; /**< Memory region that the thread uses for performing
+	                            local seach (small perturbation) on mySolution. */
+	char *myDirections; /**< Memory containing relative directions for mySolution. */
+	char *myOtherDirections; /**< Memory containing relative directions for myOtherSolution. */
+	double *pheromones; /**< Pointer to the pheromone matrix (shared by all threads). */
+	char *hpChain; /**< hpChain of the protein being predicted (shared by all threads). */
+	int nCoords; /**< Number of coordinates of the protein. */
+	int nMovElems; /**< Number of directions of the protein. */
+	double dAlpha; /**< Alpha parameter of the ACO algorithm. */
+	double dBeta; /**< Beta parameter of the ACO algorithm. */
 
 	static __device__ int3 DIRECTION_VECTOR(int3 prevDir, char dir);
 
