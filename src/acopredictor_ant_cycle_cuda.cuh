@@ -76,6 +76,10 @@ struct CUDAThread {
 	__device__ void develop_solution(int3 *solution, char *directions);
 };
 
+
+/** \defgroup CudaModules
+ *  \{ */
+/** Contains functions that are called in the host, but executed in the device. */
 namespace HostToDevice {
 	__global__
 	void ant_develop_solution(
@@ -99,6 +103,7 @@ namespace HostToDevice {
 	__global__
 	void deposit_pheromones(double *pheromones, int nMovElems, char *directions, int *contacts, int hCount);
 }
+/** \} */
 
 struct ACODeviceData {
 	CUDAPointer<double> pheromone;
