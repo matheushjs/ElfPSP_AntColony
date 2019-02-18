@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [[ "$#" = "0" || "$1" = "-h" ]]; then
+	echo "Usage: $0 [protein_size]";
+	exit 1;
+fi
+
+prot=""
+
+for i in $( seq $1 ); do
+
+done
