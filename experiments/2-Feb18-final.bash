@@ -8,7 +8,7 @@ TIMEFORMAT="%E";
 #prog_nbt_omp
 
 PROTSIZE=$(seq 64 64 1024);
-N_ITERATIONS=100;
+N_ITERATIONS=10;
 
 BINARY=prog_bt
 {
