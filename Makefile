@@ -16,13 +16,27 @@ COMMON_DEPS=hpchain.o config.o acopredictor.o
 VPATH=src/
 
 all:
-	+make prog_bt prog_nbt prog_bt_mpi prog_nbt_mpi prog_bt_omp prog_nbt_cuda prog_nbt_omp test
+	+make \
+		prog_bt_mpi prog_bt_mpi_omp \
+		prog_nbt_mpi prog_nbt_mpi_cuda prog_nbt_mpi_omp \
+		prog_bt prog_bt_omp \
+		prog_nbt prog_nbt_cuda prog_nbt_omp \
+		test
 
 prog_bt_mpi: main.o $(COMMON_DEPS)  acopredictor_predict.mpi.o acopredictor_backtracking.o acopredictor_ant_cycle.o
 	g++ $(CFLAGS) $(MPI_CFLAGS) $^ -o $@ $(MPI_LIBS)
 
+prog_bt_mpi_omp: main.o $(COMMON_DEPS)  acopredictor_predict.mpi.o acopredictor_backtracking.o acopredictor_ant_cycle_omp.omp.o
+	g++ -fopenmp $(CFLAGS) $(MPI_CFLAGS) $^ -o $@ $(MPI_LIBS)
+
 prog_nbt_mpi: main.o $(COMMON_DEPS) acopredictor_predict.mpi.o acopredictor_nobacktracking.o acopredictor_ant_cycle.o
 	g++ $(CFLAGS) $(MPI_CFLAGS) $^ -o $@ $(MPI_LIBS)
+
+prog_nbt_mpi_omp: main.o $(COMMON_DEPS) acopredictor_predict.mpi.o acopredictor_nobacktracking.o acopredictor_ant_cycle_omp.omp.o
+	g++ -fopenmp $(CFLAGS) $(MPI_CFLAGS) $^ -o $@ $(MPI_LIBS)
+
+prog_nbt_mpi_cuda: main.o $(COMMON_DEPS) acopredictor_predict.mpi.o acopredictor_nobacktracking.o acopredictor_ant_cycle_cuda.cuda.o
+	nvcc $(NVCCFLAGS) $(MPI_CFLAGS) $^ -o $@ $(MPI_LIBS)
 
 prog_bt: main.o $(COMMON_DEPS) acopredictor_predict_sequential.o acopredictor_backtracking.o acopredictor_ant_cycle.o
 	g++ $(CFLAGS) $^ -o $@
