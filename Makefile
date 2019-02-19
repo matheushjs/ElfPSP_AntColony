@@ -2,7 +2,8 @@
 CFLAGS=-Wall -O2 -I src -std=c++11
 NVCC_FLAGS=-O2 -I src -std=c++11
 
-MPI_LIBS=-Wl,-Bsymbolic-functions -Wl,-z,relro -L/usr/lib/x86_64-linux-gnu -lmpich
+MPI_LIBS=-L/usr/lib/x86_64-linux-gnu -lmpich
+MPI_PASS2LINKER=-Wl,-Bsymbolic-functions -Wl,-z,relro 
 MPI_CFLAGS=-I/usr/include/mpich
 
 # We take as a rule that if any API changes, everything should be rebuilt.
@@ -81,7 +82,7 @@ acopredictor_ant_cycle_cuda.cuda.o: acopredictor_ant_cycle_cuda.cu $(HARD_DEPS)
 	g++ -c $(CFLAGS) -o "$@" "$<"
 
 %.mpi.o:
-	g++ -c $(CFLAGS) $(MPI_CFLAGS) $< -o $@ $(MPI_LIBS)
+	g++ -c $(CFLAGS) $(MPI_CFLAGS) $< -o $@ $(MPI_PASS2LINKER) $(MPI_LIBS)
 
 %.omp.o:
 	g++ -fopenmp -c $(CFLAGS) -o "$@" "$<"
