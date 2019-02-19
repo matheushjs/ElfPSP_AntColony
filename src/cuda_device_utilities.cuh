@@ -1,20 +1,30 @@
 #pragma once
 
+/** \file cuda_device_utilities.cuh */
+
+
+/** \defgroup cuda_device_utilities_cuh
+ *  \{ */
+
+/** Prints an int3 from within device code. */
 __device__ inline
 void print(int3 a){
 	printf("(%d, %d, %d)", a.x, a.y, a.z);
 }
 
+/** Subtracts two int3. */
 __device__ inline
 int3 operator-(int3 a, int3 b){
 	return {a.x-b.x, a.y-b.y, a.z-b.z};
 }
 
+/** Adds two int3. */
 __device__ inline
 int3 operator+(int3 a, int3 b){
 	return {a.x+b.x, a.y+b.y, a.z+b.z};
 }
 
+/** Returns the norm 1 of an int3 (norm of the absolute value). */
 __device__ inline
 int norm1(int3 a){
 	return abs(a.x) + abs(a.y) + abs(a.z);
@@ -55,6 +65,8 @@ double atomicAdd_d(double* address, double val){
 
 	return __longlong_as_double(old);
 }
+
+/** \} */ // CudaDeviceUtilities
 
 template <typename T>
 class CUDAPointer {

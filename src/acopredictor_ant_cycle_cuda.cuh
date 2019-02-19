@@ -77,10 +77,10 @@ struct CUDAThread {
 };
 
 
-/** \defgroup CudaModules
- *  \{ */
-/** Contains functions that are called in the host, but executed in the device. */
 namespace HostToDevice {
+	/** \defgroup acopredictor_ant_cycle_cuda_cuh
+	 *  \{ */
+
 	/** Launches threads such that each thread executes the work of an ant.
 	 * An ant develops a solution by deciding relative directions, using the pheromone
 	 *   matrix as a guide.
@@ -153,8 +153,9 @@ namespace HostToDevice {
 	  */
 	__global__
 	void deposit_pheromones(double *pheromones, int nMovElems, char *directions, int *contacts, int hCount);
-}
+
 /** \} */
+}
 
 struct ACODeviceData {
 	CUDAPointer<double> pheromone;
