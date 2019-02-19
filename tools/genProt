@@ -1,12 +1,26 @@
 #!/bin/bash
 
+# genProt
+#
+# Script for generating protein HP sequences of a size given by the user.
+#
+# `./genProt 10` would generate an HP sequence of size 10.
+#
+# The generated HP sequence results from the concatenation of multiple "HHHP" strings.
+
 if [[ "$#" = "0" || "$1" = "-h" ]]; then
 	echo "Usage: $0 [protein_size]";
 	exit 1;
 fi
 
-prot=""
+prot="";
 
 for i in $( seq $1 ); do
-
+	if [[ "$(($i % 4))" = 0 ]]; then
+		prot="$prot""P";
+	else
+		prot="$prot""H";
+	fi
 done
+
+echo $prot;
