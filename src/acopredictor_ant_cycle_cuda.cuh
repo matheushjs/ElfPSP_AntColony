@@ -34,7 +34,7 @@ struct CUDAThread {
 	__device__ void solution_from_directions(int3 *solution, char *directions);
 
 	/** Performs local search in the thread's own solution, replacing `mySolution` if a better solution is found.
-	 * \param solContact Output argument where we store the highest number of contacts found.
+	 * \param[out] solContact Output argument where we store the highest number of contacts found.
 	 * \param lsFreq Local search frequency, which defines the number of perturbations to generate.
 	 */
 	__device__ void local_search(int &solContact, int lsFreq);
@@ -54,7 +54,7 @@ struct CUDAThread {
 	 * \param curSize Number of __coordinates__ that have already been decided.
 	 *    should correspond to the number of valid coordinates in the given `solution`.
 	 * \param solution Memory region containing the coordinates being decided.
-	 * \param heurs Output array of 5 doubles where we store heuristic values for each direction.
+	 * \param[out] heurs Output array of 5 doubles where we store heuristic values for each direction.
 	 * \param possiblePos Array of the 5 possible positions that result by following each of the 5
 	 *    directions in the current `solution`.
 	 */
@@ -62,7 +62,7 @@ struct CUDAThread {
 
 	/** Calculates probability of following each of the 5 directions.
 	  * \param movIndex Index of the direction being decided.
-	  * \param probs Output array with 5 doubles where we store the probability of following
+	  * \param[out] probs Output array with 5 doubles where we store the probability of following
 	  *   each of the 5 directions.
 	  * \param heurs Array with the 5 heuristic values of each possible direction.
 	  */
@@ -70,8 +70,8 @@ struct CUDAThread {
 
 	/** Simulates the behavior of an ant walking through the pheromone matrix,
 	  *   developing a solution.
-	  * \param solution Output memory region in which to store the solution coordinates.
-	  * \param directions Output memory region in which to store the solution directions.
+	  * \param[out] solution Output memory region in which to store the solution coordinates.
+	  * \param[out] directions Output memory region in which to store the solution directions.
 	  */
 	__device__ void develop_solution(int3 *solution, char *directions);
 };
@@ -81,6 +81,32 @@ struct CUDAThread {
  *  \{ */
 /** Contains functions that are called in the host, but executed in the device. */
 namespace HostToDevice {
+	/** Launches threads such that each thread executes the work of an ant.
+	 * An ant develops a solution by deciding relative directions, using the pheromone
+	 *   matrix as a guide.
+	 * The ant is also in charge of performing local search by generating small perturbations
+	 *   on the developed protein, and checking if the perturbed one is better.
+	 *
+	 * \param pheromone Matrix of pheromones.
+	 * \param nMovElems Number of relative movements per protein conformation (probably equal
+	 *                    the number of aminoacids minus 2).
+	 * \param solutions Memory region that can hold all protein solutions of all threads.
+	 * \param moreSolutions Memory region with same size as `solutions`.
+	 *                      Will be used as temporary storage.
+	 * \param nCoords Number of coordinates that a protein has (probably equal the
+	 *                number of aminoacids).
+	 * \param relDirections Memory region that can hold all arrays of relative directions,
+	 *                        one for each launched thread.
+	 * \param moreRelDirections Memory region with same size as `relDirections`.
+	 *                          Will be used as temporary storage.
+	 * \param[out] contacts Memory region to which we can store the number of contacts for each
+	 *                      protein developed by each thread.
+	 * \param hpChain The HP chain of the protein being predicted.
+	 * \param lsFreq Local Search Frequency, determines the number of protein perturbations to
+	 *               generate after the ant develops the first protein using the pheromones.
+	 * \param alpha Alpha parameter of the ACO algorithm.
+	 * \param beta Beta parameter of the ACO algortihm.
+	 */
 	__global__
 	void ant_develop_solution(
 		double *pheromone,   int nMovElems,
@@ -90,6 +116,17 @@ namespace HostToDevice {
 		double alpha,        double beta
 	);
 
+	/** Finds the best solution among those produced by `ant_develop_solution`.
+	  * \param contacts Array of contacts produced by `ant_develop_solution`.
+	  * \param nContacts number of contacts in `contacts`.
+	  * \param directions Array containing relative directions for all proteins produced by
+	  *                   `ant_develop_solution`.
+	  * \param nMovElems Number of relative directions per protein.
+	  * \param[out] outDirections Memory region where we can store the relative directions
+	  *                           of the best protein identified.
+	  * \param[out] outBestContact Memory region (an integer) to which we can store the number
+	  *                            of contacts of the best protein identified.
+	  */
 	__global__
 	void find_best_solution(
 		int *contacts,       int nContacts,
@@ -97,9 +134,23 @@ namespace HostToDevice {
 		char *outDirections, int *outBestContact
 	);
 
+	/** Evaporates pheromones in the pheromone matrix.
+	  * \param[in,out] pheromones Pheromone matrix.
+	  * \param nMovElems Number of relative directions per protein.
+	  * \param evapRate Rate of evaporation of pheromones. Each pheromone is multiplied
+	  *                 by (1-evapRate).
+	  */
 	__global__
 	void evaporate_pheromones(double *pheromones, int nMovElems, double evapRate);
 
+	/** Deposits pheromones in the pheromone matrix, according the each protein's quality.
+	  * \param pheromones Pheromone matrix.
+	  * \param nMovElems Number of relative directions per protein.
+	  * \param directions Array containing relative directions for all proteins produced by
+	  *                   `ant_develop_solution`.
+	  * \param contacts Array of contacts produced by `ant_develop_solution`.
+	  * \param hCount Number of H beads within the HP chain of the protein being predicted.
+	  */
 	__global__
 	void deposit_pheromones(double *pheromones, int nMovElems, char *directions, int *contacts, int hCount);
 }
