@@ -4,6 +4,8 @@
 #include <ctime>
 #include <cstdlib>
 
+/** \file main.cc */
+
 #include "hpchain.h"
 #include "config.h"
 #include "vec3.h"

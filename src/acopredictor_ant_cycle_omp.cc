@@ -2,6 +2,8 @@
 #include <vector>
 #include <omp.h>
 
+/** \file acopredictor_ant_cycle_omp.cc */
+
 #include "acopredictor.h"
 
 using std::cout;

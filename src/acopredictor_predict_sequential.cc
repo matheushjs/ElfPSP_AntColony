@@ -5,6 +5,8 @@
 
 #include "acopredictor.h"
 
+/** \file acopredictor_predict_sequential.cc */
+
 using std::cout;
 using std::cerr;
 using std::vector;

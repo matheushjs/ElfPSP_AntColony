@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 
+/** \file acopredictor_ant_cycle.cc */
+
 #include "acopredictor.h"
 
 using std::cout;

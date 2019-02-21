@@ -6,6 +6,8 @@
 #include <math.h>
 #include <math_constants.h> // CUDART_NAN
 
+/** \file acopredictor_ant_cycle_cuda.cu */
+
 #include "cuda_device_utilities.cuh"
 #include "acopredictor_ant_cycle_cuda.cuh"
 #include "acopredictor.h"

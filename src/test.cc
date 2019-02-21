@@ -7,6 +7,8 @@
 #include "vec3.h"
 #include "acosolution.h"
 
+/** \file test.cc */
+
 using namespace std;
 
 void test_aco_solution(){

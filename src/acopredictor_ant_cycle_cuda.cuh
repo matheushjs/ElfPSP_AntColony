@@ -1,5 +1,7 @@
 #pragma once
 
+/** \file acopredictor_ant_cycle_cuda.cuh */
+
 #include <string>
 
 #include "cuda_device_utilities.cuh"

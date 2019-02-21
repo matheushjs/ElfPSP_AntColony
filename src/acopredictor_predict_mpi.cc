@@ -8,6 +8,8 @@
 
 #include "acopredictor.h"
 
+/** \file acopredictor_predict_mpi.cc */
+
 using std::cout;
 using std::cerr;
 using std::vector;

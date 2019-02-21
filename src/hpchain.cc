@@ -1,6 +1,8 @@
 
 #include "hpchain.h"
 
+/** \file hpchain.cc */
+
 using std::string;
 
 bool HPChain::validate(){

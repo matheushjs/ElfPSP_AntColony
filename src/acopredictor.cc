@@ -3,6 +3,8 @@
 #include <cmath>
 #include <memory>
 
+/** \file acopredictor.cc */
+
 #include "acopredictor.h"
 
 using std::cout;
