@@ -11,6 +11,7 @@
 
 using namespace std;
 
+/** Tests ACOSolution. */
 void test_aco_solution(){
 	cout << "\n== ACOSolution ==\n";
 
@@ -36,6 +37,7 @@ void test_aco_solution(){
 	}
 }
 
+/** Main function. */
 int main(int argc, char *argv[]){
 	cout << "== HPChain ==\n"
 	     << "\t1110*\n\t"

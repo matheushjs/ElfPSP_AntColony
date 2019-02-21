@@ -18,11 +18,14 @@ using std::vector;
 using std::string;
 using std::unique_ptr;
 
+/** \{ */
+/** Relative direction constants stored in GPU memory. */
 __device__ const char UP    = 0;
 //__device__ const char DOWN  = 1;
 __device__ const char LEFT  = 2;
 __device__ const char RIGHT = 3;
 __device__ const char FRONT = 4;
+/** \}*/
 
 __device__
 double &CUDAThread::pheromone(int i, int d){

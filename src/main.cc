@@ -14,16 +14,19 @@
 
 using namespace std;
 
+/** Prints a vector of integer coordinates. */
 inline ostream& operator<<(ostream& stream, const vector<vec3<int>> vec){
 	for(vec3<int> v: vec) stream << v << " ";
 	return stream;
 }
 
+/** Prints a vector of relative directions. */
 inline ostream& operator<<(ostream& stream, const vector<char> directions){
 	for(char d: directions) stream << ACOSolution::DIR_TO_CHAR(d);
 	return stream;
 }
 
+/** Main function. */
 int main(int argc, char *argv[]){
 	/* First parse command line arguments. */
 	vector<string> args(argv, argv+argc);
