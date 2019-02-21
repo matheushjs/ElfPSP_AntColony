@@ -80,21 +80,88 @@ Functions</h2></td></tr>
 <tr class="memitem:ga2b78f4aa40f59778d77e39e9c9ff330d"><td class="memItemLeft" align="right" valign="top">__device__ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cuda__device__utilities__cuh.html#ga2b78f4aa40f59778d77e39e9c9ff330d">norm1</a> (int3 a)</td></tr>
 <tr class="memdesc:ga2b78f4aa40f59778d77e39e9c9ff330d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the norm 1 of an int3 (norm of the absolute value).  <a href="#ga2b78f4aa40f59778d77e39e9c9ff330d">More...</a><br /></td></tr>
 <tr class="separator:ga2b78f4aa40f59778d77e39e9c9ff330d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8715a44ff1a8f9f40d605c5259445d4b"><td class="memItemLeft" align="right" valign="top"><a id="ga8715a44ff1a8f9f40d605c5259445d4b"></a>
-__device__ void&#160;</td><td class="memItemRight" valign="bottom"><b>moveSeed</b> (int &amp;movingSeed)</td></tr>
+<tr class="memitem:ga8715a44ff1a8f9f40d605c5259445d4b"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cuda__device__utilities__cuh.html#ga8715a44ff1a8f9f40d605c5259445d4b">moveSeed</a> (int &amp;movingSeed)</td></tr>
+<tr class="memdesc:ga8715a44ff1a8f9f40d605c5259445d4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Randomizes the given number, which also serves as the random generation seed.  <a href="#ga8715a44ff1a8f9f40d605c5259445d4b">More...</a><br /></td></tr>
 <tr class="separator:ga8715a44ff1a8f9f40d605c5259445d4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4de17cc292c745d4f0471bbf5c0e5430"><td class="memItemLeft" align="right" valign="top"><a id="ga4de17cc292c745d4f0471bbf5c0e5430"></a>
-__device__ int&#160;</td><td class="memItemRight" valign="bottom"><b>randomize</b> (int &amp;movingSeed)</td></tr>
+<tr class="memitem:ga4de17cc292c745d4f0471bbf5c0e5430"><td class="memItemLeft" align="right" valign="top">__device__ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cuda__device__utilities__cuh.html#ga4de17cc292c745d4f0471bbf5c0e5430">randomize</a> (int &amp;movingSeed)</td></tr>
+<tr class="memdesc:ga4de17cc292c745d4f0471bbf5c0e5430"><td class="mdescLeft">&#160;</td><td class="mdescRight">A wrapper for <code>moveSeed</code>, which also returns the generated random number.  <a href="#ga4de17cc292c745d4f0471bbf5c0e5430">More...</a><br /></td></tr>
 <tr class="separator:ga4de17cc292c745d4f0471bbf5c0e5430"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf5cb7e2ed6288aa32f6d8d39db35b6a1"><td class="memItemLeft" align="right" valign="top"><a id="gaf5cb7e2ed6288aa32f6d8d39db35b6a1"></a>
-__device__ double&#160;</td><td class="memItemRight" valign="bottom"><b>randomize_d</b> (int &amp;movingSeed)</td></tr>
+<tr class="memitem:gaf5cb7e2ed6288aa32f6d8d39db35b6a1"><td class="memItemLeft" align="right" valign="top">__device__ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cuda__device__utilities__cuh.html#gaf5cb7e2ed6288aa32f6d8d39db35b6a1">randomize_d</a> (int &amp;movingSeed)</td></tr>
+<tr class="memdesc:gaf5cb7e2ed6288aa32f6d8d39db35b6a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Version of <code>randomize</code> that returns a number in range [0,1].  <a href="#gaf5cb7e2ed6288aa32f6d8d39db35b6a1">More...</a><br /></td></tr>
 <tr class="separator:gaf5cb7e2ed6288aa32f6d8d39db35b6a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadff3625d48e6b93f470a3f9af8b6f9bb"><td class="memItemLeft" align="right" valign="top"><a id="gadff3625d48e6b93f470a3f9af8b6f9bb"></a>
-__device__ double&#160;</td><td class="memItemRight" valign="bottom"><b>atomicAdd_d</b> (double *address, double val)</td></tr>
+<tr class="memitem:gadff3625d48e6b93f470a3f9af8b6f9bb"><td class="memItemLeft" align="right" valign="top">__device__ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cuda__device__utilities__cuh.html#gadff3625d48e6b93f470a3f9af8b6f9bb">atomicAdd_d</a> (double *address, double val)</td></tr>
+<tr class="memdesc:gadff3625d48e6b93f470a3f9af8b6f9bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomic addition, which only uses the built-in atomicCAS function.  <a href="#gadff3625d48e6b93f470a3f9af8b6f9bb">More...</a><br /></td></tr>
 <tr class="separator:gadff3625d48e6b93f470a3f9af8b6f9bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="gadff3625d48e6b93f470a3f9af8b6f9bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadff3625d48e6b93f470a3f9af8b6f9bb">&#9670;&nbsp;</a></span>atomicAdd_d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">__device__ double atomicAdd_d </td>
+          <td>(</td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>address</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomic addition, which only uses the built-in atomicCAS function. </p>
+<p>This function aims at older versions of GPUs, which don't have atomicAdd(). </p>
+
+</div>
+</div>
+<a id="ga8715a44ff1a8f9f40d605c5259445d4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8715a44ff1a8f9f40d605c5259445d4b">&#9670;&nbsp;</a></span>moveSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">__device__ void moveSeed </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>movingSeed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Randomizes the given number, which also serves as the random generation seed. </p>
+
+</div>
+</div>
 <a id="ga2b78f4aa40f59778d77e39e9c9ff330d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga2b78f4aa40f59778d77e39e9c9ff330d">&#9670;&nbsp;</a></span>norm1()</h2>
 
@@ -224,6 +291,62 @@ __device__ double&#160;</td><td class="memItemRight" valign="bottom"><b>atomicAd
 </div><div class="memdoc">
 
 <p>Prints an int3 from within device code. </p>
+
+</div>
+</div>
+<a id="ga4de17cc292c745d4f0471bbf5c0e5430"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4de17cc292c745d4f0471bbf5c0e5430">&#9670;&nbsp;</a></span>randomize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">__device__ int randomize </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>movingSeed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>A wrapper for <code>moveSeed</code>, which also returns the generated random number. </p>
+
+</div>
+</div>
+<a id="gaf5cb7e2ed6288aa32f6d8d39db35b6a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaf5cb7e2ed6288aa32f6d8d39db35b6a1">&#9670;&nbsp;</a></span>randomize_d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">__device__ double randomize_d </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>movingSeed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Version of <code>randomize</code> that returns a number in range [0,1]. </p>
 
 </div>
 </div>

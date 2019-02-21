@@ -113,8 +113,8 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:abed6de11165426140daa82df762ff2d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classACOPredictor.html#abed6de11165426140daa82df762ff2d1">ant_deposit_pheromone</a> (const std::vector&lt; char &gt; &amp;directions, int nContacts)</td></tr>
 <tr class="memdesc:abed6de11165426140daa82df762ff2d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deposits pheromones along the trail followed by the given ant.  <a href="#abed6de11165426140daa82df762ff2d1">More...</a><br /></td></tr>
 <tr class="separator:abed6de11165426140daa82df762ff2d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4471e2f341a7ae980a7842f80142472b"><td class="memItemLeft" align="right" valign="top"><a id="a4471e2f341a7ae980a7842f80142472b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>perform_cycle</b> (std::vector&lt; <a class="el" href="classACOSolution.html">ACOSolution</a> &gt; &amp;antsSolutions, int *nContacts)</td></tr>
+<tr class="memitem:a4471e2f341a7ae980a7842f80142472b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classACOPredictor.html#a4471e2f341a7ae980a7842f80142472b">perform_cycle</a> (std::vector&lt; <a class="el" href="classACOSolution.html">ACOSolution</a> &gt; &amp;antsSolutions, int *nContacts)</td></tr>
+<tr class="memdesc:a4471e2f341a7ae980a7842f80142472b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs a cycle of the ant colony.  <a href="#a4471e2f341a7ae980a7842f80142472b">More...</a><br /></td></tr>
 <tr class="separator:a4471e2f341a7ae980a7842f80142472b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
@@ -368,6 +368,53 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 
 <p>Return a vector V with 5 probabilities. </p>
 <p>V[d] is the probability of going to direction d. </p>
+
+</div>
+</div>
+<a id="a4471e2f341a7ae980a7842f80142472b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4471e2f341a7ae980a7842f80142472b">&#9670;&nbsp;</a></span>perform_cycle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ACOPredictor::perform_cycle </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classACOSolution.html">ACOSolution</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>antsSolutions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>nContacts</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Performs a cycle of the ant colony. </p>
+<p>A cycle consitst of each:</p><ol type="1">
+<li>ant developing a solution,</li>
+<li>calculating the solution contacts,</li>
+<li>performing local search in each solution,</li>
+<li>finding the best solution generated,</li>
+<li>evaporating pheromones and finally</li>
+<li>depositing pheromones.</li>
+</ol>
+<p>This function is the one parallelized for multiple parallel programming models, in the files acopredictor_ant_cycle[...]. </p>
 
 </div>
 </div>
@@ -820,14 +867,14 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/<a class="el" href="acopredictor_8h_source.html">acopredictor.h</a></li>
-<li>src/acopredictor.cc</li>
-<li>src/acopredictor_ant_cycle.cc</li>
-<li>src/acopredictor_ant_cycle_cuda.cu</li>
-<li>src/acopredictor_ant_cycle_omp.cc</li>
-<li>src/acopredictor_backtracking.cc</li>
-<li>src/acopredictor_nobacktracking.cc</li>
-<li>src/acopredictor_predict_mpi.cc</li>
-<li>src/acopredictor_predict_sequential.cc</li>
+<li>src/<a class="el" href="acopredictor_8cc.html">acopredictor.cc</a></li>
+<li>src/<a class="el" href="acopredictor__ant__cycle_8cc.html">acopredictor_ant_cycle.cc</a></li>
+<li>src/<a class="el" href="acopredictor__ant__cycle__cuda_8cu.html">acopredictor_ant_cycle_cuda.cu</a></li>
+<li>src/<a class="el" href="acopredictor__ant__cycle__omp_8cc.html">acopredictor_ant_cycle_omp.cc</a></li>
+<li>src/<a class="el" href="acopredictor__backtracking_8cc.html">acopredictor_backtracking.cc</a></li>
+<li>src/<a class="el" href="acopredictor__nobacktracking_8cc.html">acopredictor_nobacktracking.cc</a></li>
+<li>src/<a class="el" href="acopredictor__predict__mpi_8cc.html">acopredictor_predict_mpi.cc</a></li>
+<li>src/<a class="el" href="acopredictor__predict__sequential_8cc.html">acopredictor_predict_sequential.cc</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

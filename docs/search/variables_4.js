@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['left',['LEFT',['../classACOSolution.html#a639b433ce486b9c3318123a7a10df144',1,'ACOSolution']]]
+  ['hpchain',['hpChain',['../structCUDAThread.html#a3d2ec8eacf95385976d2c2797854594c',1,'CUDAThread::hpChain()'],['../structACODeviceData.html#a37c0a34381be0060e55478d3303f2686',1,'ACODeviceData::hpChain()']]]
 ];

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['randnumber',['randNumber',['../structCUDAThread.html#a8f64b71040b7948b836caf2da595a754',1,'CUDAThread']]],
-  ['right',['RIGHT',['../classACOSolution.html#add03307787530d51a7fdc004a4d9d73a',1,'ACOSolution']]]
+  ['pheromone',['pheromone',['../structACODeviceData.html#aa503609c2618724e7739d0acc5c56a1a',1,'ACODeviceData']]],
+  ['pheromones',['pheromones',['../structCUDAThread.html#a27992cadf6e384fc80ec94485108faba',1,'CUDAThread']]]
 ];

@@ -1,7 +1,8 @@
 var searchData=
 [
+  ['perform_5fcycle',['perform_cycle',['../classACOPredictor.html#a4471e2f341a7ae980a7842f80142472b',1,'ACOPredictor']]],
   ['perturb_5fone',['perturb_one',['../classACOSolution.html#a16d0043cf3fc64921abc920ce18d14f0',1,'ACOSolution']]],
-  ['pheromone',['pheromone',['../classACOPredictor.html#a021b82ceb647fea7def80c030545b3aa',1,'ACOPredictor::pheromone()'],['../structCUDAThread.html#a62aca698c01265728d3e7d243dcf5f84',1,'CUDAThread::pheromone()']]],
+  ['pheromone',['pheromone',['../structACODeviceData.html#aa503609c2618724e7739d0acc5c56a1a',1,'ACODeviceData::pheromone()'],['../classACOPredictor.html#a021b82ceb647fea7def80c030545b3aa',1,'ACOPredictor::pheromone()'],['../structCUDAThread.html#a62aca698c01265728d3e7d243dcf5f84',1,'CUDAThread::pheromone()']]],
   ['pheromones',['pheromones',['../structCUDAThread.html#a27992cadf6e384fc80ec94485108faba',1,'CUDAThread']]],
   ['predict',['predict',['../classACOPredictor.html#a30237dd0e83877b9178bc56774f7087d',1,'ACOPredictor']]],
   ['previous_5fdirection',['previous_direction',['../classACOSolution.html#aa0595210de854f8ab65c850681e43e29',1,'ACOSolution']]],

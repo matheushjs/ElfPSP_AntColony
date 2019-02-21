@@ -6,5 +6,6 @@ var searchData=
   ['acopredictor',['ACOPredictor',['../classACOPredictor.html#a39342945cf4783e347be0ca2bb059d5c',1,'ACOPredictor']]],
   ['acosolution',['ACOSolution',['../classACOSolution.html#a9deda269ce48461c19cb448c63bf893a',1,'ACOSolution::ACOSolution()'],['../classACOSolution.html#aa4e6758709f48c82ddb8ff0d5ee3de45',1,'ACOSolution::ACOSolution(std::vector&lt; char &gt; &amp;directions)']]],
   ['ant_5fdeposit_5fpheromone',['ant_deposit_pheromone',['../classACOPredictor.html#abed6de11165426140daa82df762ff2d1',1,'ACOPredictor']]],
-  ['ant_5fdevelop_5fsolution',['ant_develop_solution',['../classACOPredictor.html#a4301c8dc38a5810a410debe9a906eb9b',1,'ACOPredictor::ant_develop_solution()'],['../group__acopredictor__ant__cycle__cuda__cuh.html#ga0a84bc51b3f13064756952cf7d0ecbc4',1,'HostToDevice::ant_develop_solution()']]]
+  ['ant_5fdevelop_5fsolution',['ant_develop_solution',['../classACOPredictor.html#a4301c8dc38a5810a410debe9a906eb9b',1,'ACOPredictor::ant_develop_solution()'],['../group__acopredictor__ant__cycle__cuda__cuh.html#ga0a84bc51b3f13064756952cf7d0ecbc4',1,'HostToDevice::ant_develop_solution()']]],
+  ['atomicadd_5fd',['atomicAdd_d',['../group__cuda__device__utilities__cuh.html#gadff3625d48e6b93f470a3f9af8b6f9bb',1,'cuda_device_utilities.cuh']]]
 ];

@@ -66,36 +66,170 @@ $(function() {
 <div class="title">ACODeviceData Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Holds pointers to memory allocated within GPU memory.  
+ <a href="structACODeviceData.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:aa503609c2618724e7739d0acc5c56a1a"><td class="memItemLeft" align="right" valign="top"><a id="aa503609c2618724e7739d0acc5c56a1a"></a>
-<a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pheromone</b></td></tr>
+<tr class="memitem:aa503609c2618724e7739d0acc5c56a1a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structACODeviceData.html#aa503609c2618724e7739d0acc5c56a1a">pheromone</a></td></tr>
+<tr class="memdesc:aa503609c2618724e7739d0acc5c56a1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pheromone matrix.  <a href="#aa503609c2618724e7739d0acc5c56a1a">More...</a><br /></td></tr>
 <tr class="separator:aa503609c2618724e7739d0acc5c56a1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8492ef1759d596e678caeadbd39731dd"><td class="memItemLeft" align="right" valign="top"><a id="a8492ef1759d596e678caeadbd39731dd"></a>
-<a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; int3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>solutions</b></td></tr>
+<tr class="memitem:a8492ef1759d596e678caeadbd39731dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; int3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structACODeviceData.html#a8492ef1759d596e678caeadbd39731dd">solutions</a></td></tr>
+<tr class="memdesc:a8492ef1759d596e678caeadbd39731dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solution coordinates for each ant.  <a href="#a8492ef1759d596e678caeadbd39731dd">More...</a><br /></td></tr>
 <tr class="separator:a8492ef1759d596e678caeadbd39731dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe781b15df9315907d36303c88fd5604"><td class="memItemLeft" align="right" valign="top"><a id="afe781b15df9315907d36303c88fd5604"></a>
-<a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; int3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>moreSolutions</b></td></tr>
+<tr class="memitem:afe781b15df9315907d36303c88fd5604"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; int3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structACODeviceData.html#afe781b15df9315907d36303c88fd5604">moreSolutions</a></td></tr>
+<tr class="memdesc:afe781b15df9315907d36303c88fd5604"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temporary storage for solution coordiantes for each ant.  <a href="#afe781b15df9315907d36303c88fd5604">More...</a><br /></td></tr>
 <tr class="separator:afe781b15df9315907d36303c88fd5604"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab95ab71bc2c24083a1379b479aac7bf"><td class="memItemLeft" align="right" valign="top"><a id="aab95ab71bc2c24083a1379b479aac7bf"></a>
-<a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; char &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>relDirections</b></td></tr>
+<tr class="memitem:aab95ab71bc2c24083a1379b479aac7bf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structACODeviceData.html#aab95ab71bc2c24083a1379b479aac7bf">relDirections</a></td></tr>
+<tr class="memdesc:aab95ab71bc2c24083a1379b479aac7bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solution relative directions for each ant.  <a href="#aab95ab71bc2c24083a1379b479aac7bf">More...</a><br /></td></tr>
 <tr class="separator:aab95ab71bc2c24083a1379b479aac7bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7182ca6cc60000d24ca1cc039d62660c"><td class="memItemLeft" align="right" valign="top"><a id="a7182ca6cc60000d24ca1cc039d62660c"></a>
-<a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; char &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>moreRelDirections</b></td></tr>
+<tr class="memitem:a7182ca6cc60000d24ca1cc039d62660c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structACODeviceData.html#a7182ca6cc60000d24ca1cc039d62660c">moreRelDirections</a></td></tr>
+<tr class="memdesc:a7182ca6cc60000d24ca1cc039d62660c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temporary storage for solution relative directions for each ant.  <a href="#a7182ca6cc60000d24ca1cc039d62660c">More...</a><br /></td></tr>
 <tr class="separator:a7182ca6cc60000d24ca1cc039d62660c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae7ebbd8cb9f7cc68a0edfa83aabce418"><td class="memItemLeft" align="right" valign="top"><a id="ae7ebbd8cb9f7cc68a0edfa83aabce418"></a>
-<a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>contacts</b></td></tr>
+<tr class="memitem:ae7ebbd8cb9f7cc68a0edfa83aabce418"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structACODeviceData.html#ae7ebbd8cb9f7cc68a0edfa83aabce418">contacts</a></td></tr>
+<tr class="memdesc:ae7ebbd8cb9f7cc68a0edfa83aabce418"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of contacts for each solution of each ant.  <a href="#ae7ebbd8cb9f7cc68a0edfa83aabce418">More...</a><br /></td></tr>
 <tr class="separator:ae7ebbd8cb9f7cc68a0edfa83aabce418"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a225d1b27bea427ad64bff01e40018ede"><td class="memItemLeft" align="right" valign="top"><a id="a225d1b27bea427ad64bff01e40018ede"></a>
-<a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>bestContact</b></td></tr>
+<tr class="memitem:a225d1b27bea427ad64bff01e40018ede"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structACODeviceData.html#a225d1b27bea427ad64bff01e40018ede">bestContact</a></td></tr>
+<tr class="memdesc:a225d1b27bea427ad64bff01e40018ede"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of contacts of the best solution produced by the ants.  <a href="#a225d1b27bea427ad64bff01e40018ede">More...</a><br /></td></tr>
 <tr class="separator:a225d1b27bea427ad64bff01e40018ede"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37c0a34381be0060e55478d3303f2686"><td class="memItemLeft" align="right" valign="top"><a id="a37c0a34381be0060e55478d3303f2686"></a>
-<a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; char &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>hpChain</b></td></tr>
+<tr class="memitem:a37c0a34381be0060e55478d3303f2686"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt; char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structACODeviceData.html#a37c0a34381be0060e55478d3303f2686">hpChain</a></td></tr>
+<tr class="memdesc:a37c0a34381be0060e55478d3303f2686"><td class="mdescLeft">&#160;</td><td class="mdescRight">HP chain of the protein being predicted.  <a href="#a37c0a34381be0060e55478d3303f2686">More...</a><br /></td></tr>
 <tr class="separator:a37c0a34381be0060e55478d3303f2686"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Holds pointers to memory allocated within GPU memory. </p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="a225d1b27bea427ad64bff01e40018ede"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a225d1b27bea427ad64bff01e40018ede">&#9670;&nbsp;</a></span>bestContact</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt;int&gt; ACODeviceData::bestContact</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of contacts of the best solution produced by the ants. </p>
+
+</div>
+</div>
+<a id="ae7ebbd8cb9f7cc68a0edfa83aabce418"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7ebbd8cb9f7cc68a0edfa83aabce418">&#9670;&nbsp;</a></span>contacts</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt;int&gt; ACODeviceData::contacts</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of contacts for each solution of each ant. </p>
+
+</div>
+</div>
+<a id="a37c0a34381be0060e55478d3303f2686"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37c0a34381be0060e55478d3303f2686">&#9670;&nbsp;</a></span>hpChain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt;char&gt; ACODeviceData::hpChain</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>HP chain of the protein being predicted. </p>
+
+</div>
+</div>
+<a id="a7182ca6cc60000d24ca1cc039d62660c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7182ca6cc60000d24ca1cc039d62660c">&#9670;&nbsp;</a></span>moreRelDirections</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt;char&gt; ACODeviceData::moreRelDirections</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Temporary storage for solution relative directions for each ant. </p>
+
+</div>
+</div>
+<a id="afe781b15df9315907d36303c88fd5604"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe781b15df9315907d36303c88fd5604">&#9670;&nbsp;</a></span>moreSolutions</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt;int3&gt; ACODeviceData::moreSolutions</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Temporary storage for solution coordiantes for each ant. </p>
+
+</div>
+</div>
+<a id="aa503609c2618724e7739d0acc5c56a1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa503609c2618724e7739d0acc5c56a1a">&#9670;&nbsp;</a></span>pheromone</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt;double&gt; ACODeviceData::pheromone</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pheromone matrix. </p>
+
+</div>
+</div>
+<a id="aab95ab71bc2c24083a1379b479aac7bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab95ab71bc2c24083a1379b479aac7bf">&#9670;&nbsp;</a></span>relDirections</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt;char&gt; ACODeviceData::relDirections</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solution relative directions for each ant. </p>
+
+</div>
+</div>
+<a id="a8492ef1759d596e678caeadbd39731dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8492ef1759d596e678caeadbd39731dd">&#9670;&nbsp;</a></span>solutions</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classCUDAPointer.html">CUDAPointer</a>&lt;int3&gt; ACODeviceData::solutions</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solution coordinates for each ant. </p>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>src/acopredictor_ant_cycle_cuda.cuh</li>
+<li>src/<a class="el" href="acopredictor__ant__cycle__cuda_8cuh.html">acopredictor_ant_cycle_cuda.cuh</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

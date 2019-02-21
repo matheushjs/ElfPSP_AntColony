@@ -74,6 +74,7 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCUDAPointer.html">CUDAPointer&lt; T &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encapsulates a pointer to a memory region within the GPU memory space.  <a href="classCUDAPointer.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -90,17 +91,17 @@ Functions</h2></td></tr>
 <tr class="memitem:ga2b78f4aa40f59778d77e39e9c9ff330d"><td class="memItemLeft" align="right" valign="top">__device__ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cuda__device__utilities__cuh.html#ga2b78f4aa40f59778d77e39e9c9ff330d">norm1</a> (int3 a)</td></tr>
 <tr class="memdesc:ga2b78f4aa40f59778d77e39e9c9ff330d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the norm 1 of an int3 (norm of the absolute value).  <a href="group__cuda__device__utilities__cuh.html#ga2b78f4aa40f59778d77e39e9c9ff330d">More...</a><br /></td></tr>
 <tr class="separator:ga2b78f4aa40f59778d77e39e9c9ff330d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8715a44ff1a8f9f40d605c5259445d4b"><td class="memItemLeft" align="right" valign="top">
-__device__ void&#160;</td><td class="memItemRight" valign="bottom"><b>moveSeed</b> (int &amp;movingSeed)</td></tr>
+<tr class="memitem:ga8715a44ff1a8f9f40d605c5259445d4b"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cuda__device__utilities__cuh.html#ga8715a44ff1a8f9f40d605c5259445d4b">moveSeed</a> (int &amp;movingSeed)</td></tr>
+<tr class="memdesc:ga8715a44ff1a8f9f40d605c5259445d4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Randomizes the given number, which also serves as the random generation seed.  <a href="group__cuda__device__utilities__cuh.html#ga8715a44ff1a8f9f40d605c5259445d4b">More...</a><br /></td></tr>
 <tr class="separator:ga8715a44ff1a8f9f40d605c5259445d4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4de17cc292c745d4f0471bbf5c0e5430"><td class="memItemLeft" align="right" valign="top">
-__device__ int&#160;</td><td class="memItemRight" valign="bottom"><b>randomize</b> (int &amp;movingSeed)</td></tr>
+<tr class="memitem:ga4de17cc292c745d4f0471bbf5c0e5430"><td class="memItemLeft" align="right" valign="top">__device__ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cuda__device__utilities__cuh.html#ga4de17cc292c745d4f0471bbf5c0e5430">randomize</a> (int &amp;movingSeed)</td></tr>
+<tr class="memdesc:ga4de17cc292c745d4f0471bbf5c0e5430"><td class="mdescLeft">&#160;</td><td class="mdescRight">A wrapper for <code>moveSeed</code>, which also returns the generated random number.  <a href="group__cuda__device__utilities__cuh.html#ga4de17cc292c745d4f0471bbf5c0e5430">More...</a><br /></td></tr>
 <tr class="separator:ga4de17cc292c745d4f0471bbf5c0e5430"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf5cb7e2ed6288aa32f6d8d39db35b6a1"><td class="memItemLeft" align="right" valign="top">
-__device__ double&#160;</td><td class="memItemRight" valign="bottom"><b>randomize_d</b> (int &amp;movingSeed)</td></tr>
+<tr class="memitem:gaf5cb7e2ed6288aa32f6d8d39db35b6a1"><td class="memItemLeft" align="right" valign="top">__device__ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cuda__device__utilities__cuh.html#gaf5cb7e2ed6288aa32f6d8d39db35b6a1">randomize_d</a> (int &amp;movingSeed)</td></tr>
+<tr class="memdesc:gaf5cb7e2ed6288aa32f6d8d39db35b6a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Version of <code>randomize</code> that returns a number in range [0,1].  <a href="group__cuda__device__utilities__cuh.html#gaf5cb7e2ed6288aa32f6d8d39db35b6a1">More...</a><br /></td></tr>
 <tr class="separator:gaf5cb7e2ed6288aa32f6d8d39db35b6a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadff3625d48e6b93f470a3f9af8b6f9bb"><td class="memItemLeft" align="right" valign="top">
-__device__ double&#160;</td><td class="memItemRight" valign="bottom"><b>atomicAdd_d</b> (double *address, double val)</td></tr>
+<tr class="memitem:gadff3625d48e6b93f470a3f9af8b6f9bb"><td class="memItemLeft" align="right" valign="top">__device__ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cuda__device__utilities__cuh.html#gadff3625d48e6b93f470a3f9af8b6f9bb">atomicAdd_d</a> (double *address, double val)</td></tr>
+<tr class="memdesc:gadff3625d48e6b93f470a3f9af8b6f9bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomic addition, which only uses the built-in atomicCAS function.  <a href="group__cuda__device__utilities__cuh.html#gadff3625d48e6b93f470a3f9af8b6f9bb">More...</a><br /></td></tr>
 <tr class="separator:gadff3625d48e6b93f470a3f9af8b6f9bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
