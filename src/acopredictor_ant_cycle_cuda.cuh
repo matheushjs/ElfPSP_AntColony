@@ -157,13 +157,14 @@ namespace HostToDevice {
 /** \} */
 }
 
+/** Holds pointers to memory allocated within GPU memory. */
 struct ACODeviceData {
-	CUDAPointer<double> pheromone;
-	CUDAPointer<int3>   solutions;
-	CUDAPointer<int3>   moreSolutions;
-	CUDAPointer<char>   relDirections;
-	CUDAPointer<char>   moreRelDirections;
-	CUDAPointer<int>    contacts;
-	CUDAPointer<int>    bestContact;
-	CUDAPointer<char>   hpChain;
+	CUDAPointer<double> pheromone; /**< Pheromone matrix. */
+	CUDAPointer<int3>   solutions; /**< Solution coordinates for each ant. */
+	CUDAPointer<int3>   moreSolutions; /**< Temporary storage for solution coordiantes for each ant. */
+	CUDAPointer<char>   relDirections; /**< Solution relative directions for each ant. */
+	CUDAPointer<char>   moreRelDirections; /**< Temporary storage for solution relative directions for each ant. */
+	CUDAPointer<int>    contacts; /**< Number of contacts for each solution of each ant. */
+	CUDAPointer<int>    bestContact; /**< Number of contacts of the best solution produced by the ants. */
+	CUDAPointer<char>   hpChain; /**< HP chain of the protein being predicted. */
 };
