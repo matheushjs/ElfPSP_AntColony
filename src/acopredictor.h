@@ -44,6 +44,18 @@ class ACOPredictor {
 	std::vector<double> get_probabilities(int movIndex, std::vector<double> heuristics) const;
 	ACOSolution ant_develop_solution(int tid = 0);
 	void ant_deposit_pheromone(const std::vector<char> &directions, int nContacts);
+
+	/** Performs a cycle of the ant colony.
+	 * A cycle consitst of each:
+	 * 1. ant developing a solution,
+	 * 2. calculating the solution contacts,
+	 * 3. performing local search in each solution,
+	 * 4. finding the best solution generated,
+	 * 5. evaporating pheromones and finally
+	 * 6. depositing pheromones.
+	 *
+	 * This function is the one parallelized for multiple parallel programming models,
+	 * in the files acopredictor_ant_cycle[...]. */
 	void perform_cycle(std::vector<ACOSolution> &antsSolutions, int *nContacts);
 
 public:
