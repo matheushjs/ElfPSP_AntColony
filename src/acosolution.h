@@ -30,7 +30,7 @@ public:
 	static const char FRONT = 4; /**< Relative direction. */
 
 	/** Maps directions to characters U, D, L, R, F. `DIR_TO_CHAR(0)` yields 'U'. */
-	static const char DIR_TO_CHAR(char d);
+	static char DIR_TO_CHAR(char d);
 
 	/** @{ */ /** Vector of bead coordinates. */
 	std::vector<vec3<int>> &vector() { return dVector; }
@@ -111,7 +111,7 @@ inline ACOSolution::ACOSolution(std::vector<char> &directions)
 }
 
 inline
-const char ACOSolution::DIR_TO_CHAR(char d){
+char ACOSolution::DIR_TO_CHAR(char d){
 	static const char map[] = { 'U', 'D', 'R', 'L', 'F' };
 	return map[(int) d];
 }
