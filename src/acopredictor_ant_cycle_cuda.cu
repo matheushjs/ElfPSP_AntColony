@@ -12,6 +12,8 @@
 #include "acopredictor_ant_cycle_cuda.cuh"
 #include "acopredictor.h"
 
+#define THREADS_PER_BLOCK 128
+
 using std::cout;
 using std::cerr;
 using std::vector;
@@ -324,6 +326,15 @@ void HostToDevice::ant_develop_solution(
 	double alpha,
 	double beta
 ){
+	// Begin by handling shared memory
+	extern __shared__ char shMem[];
+
+	for(int i = threadIdx.x; i < nCoords; i += blockDim.x){
+		shMem[i] = hpChain[i];
+	}
+	__syncthreads();
+
+
 	CUDAThread *self = new CUDAThread();
 
 	self->tid = blockIdx.x * blockDim.x + threadIdx.x;
@@ -335,7 +346,7 @@ void HostToDevice::ant_develop_solution(
 	self->myDirections      = relDirections + nMovElems*self->tid;
 	self->myOtherDirections = moreRelDirections + nMovElems*self->tid;
 	self->pheromones = pheromone;
-	self->hpChain    = hpChain;
+	self->hpChain    = (char*) shMem;
 	self->nCoords    = nCoords;
 	self->nMovElems  = nMovElems;
 	self->dAlpha     = alpha;
@@ -529,7 +540,7 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 	int nCoords = dNMovElems + 2;
 	string hpChain = dHPChain.get_chain();
 
-	const int antsPerBlock = 256;
+	const int antsPerBlock = THREADS_PER_BLOCK;
 	const int nBlocks      = (dNAnts + antsPerBlock - 1) / antsPerBlock;
 	const int totalAnts    = antsPerBlock * nBlocks; // This is >= dNAnts
 
@@ -552,9 +563,12 @@ void ACOPredictor::perform_cycle(vector<ACOSolution> &antsSolutions, int *nConta
 	for(int i = 0; i < dNAnts; i++)
 		cudaMemcpyAsync(d.solutions.get() + i*nCoords, fillData, sizeof(int3)*2, cudaMemcpyHostToDevice);
 
+	int shMemBytes = 0;
+	shMemBytes += hpChain.length() * sizeof(char);
+
 	// Let GPU develop solutions
 	// Here each ant develops a solution
-	HostToDevice::ant_develop_solution<<<nBlocks,antsPerBlock>>>(d.pheromone, dNMovElems,
+	HostToDevice::ant_develop_solution<<<nBlocks,antsPerBlock,shMemBytes>>>(d.pheromone, dNMovElems,
 			d.solutions, d.moreSolutions, nCoords,
 			d.relDirections, d.moreRelDirections,
 			d.contacts, d.hpChain, dLSFreq, dAlpha, dBeta);
